@@ -16,12 +16,14 @@ import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import SchoolIcon from '@mui/icons-material/School';
-import MenuBookSharpIcon from '@mui/icons-material/MenuBookSharp';
-import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
-import CreditScoreIcon from '@mui/icons-material/CreditScore';
-import RunningWithErrorsIcon from '@mui/icons-material/RunningWithErrors';
-import LogoutIcon from '@mui/icons-material/Logout';
+import SchoolIcon from "@mui/icons-material/School";
+import MenuBookSharpIcon from "@mui/icons-material/MenuBookSharp";
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import CreditScoreIcon from "@mui/icons-material/CreditScore";
+import RunningWithErrorsIcon from "@mui/icons-material/RunningWithErrors";
+import LogoutIcon from "@mui/icons-material/Logout";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
+import { Link } from "react-router-dom";
 const drawerWidth = 240;
 
 interface Props {
@@ -34,10 +36,19 @@ interface Props {
 
 export default function ResponsiveDrawer(props: Props) {
   const { window } = props;
+  const [openItems, setOpenItems] = React.useState<{ [key: string]: boolean }>(
+    {}
+  );
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const username = localStorage.getItem("username");
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
+  };
+  const handleItemClick = (text: any) => {
+    setOpenItems((prevOpenItems) => ({
+      ...prevOpenItems,
+      [text]: !prevOpenItems[text],
+    }));
   };
 
   const drawer = (
@@ -45,21 +56,105 @@ export default function ResponsiveDrawer(props: Props) {
       <Toolbar />
       <List>
         {[
-          { text: "Home", icon: <HomeIcon /> },
-          { text: "Books", icon: <MenuBookSharpIcon /> },
-          { text: "Users", icon: <PeopleAltIcon /> },
-          { text: "Careers", icon: <SchoolIcon /> },
-          { text: "Loans", icon: <CreditScoreIcon /> },
-          { text: "Arrears", icon: <RunningWithErrorsIcon /> },
-          { text: "LogOut", icon: <LogoutIcon /> },
+          {
+            text: "Home",
+            icon: <HomeIcon />,
+            children: [],
+            to: "/dashboard-admin",
+          },
+          {
+            text: "Books",
+            icon: <MenuBookSharpIcon />,
+            to: "",
+            children: [
+              {
+                text: "Fiction",
+                icon: <AssessmentIcon />,
+                children: [],
+                to: "dashboard-admin",
+              },
+              {
+                text: "Non-Fiction",
+                icon: <AssessmentIcon />,
+                children: [],
+                to: "dashboard-admin",
+              },
+            ],
+          },
+          {
+            text: "Users",
+            icon: <PeopleAltIcon />,
+            children: [],
+            to: "/user-list",
+          },
+          {
+            text: "Careers",
+            icon: <SchoolIcon />,
+            children: [],
+            to: "dashboard-admin",
+          },
+          {
+            text: "Loans",
+            icon: <CreditScoreIcon />,
+            children: [],
+            to: "dashboard-admin",
+          },
+          {
+            text: "Arrears",
+            icon: <RunningWithErrorsIcon />,
+            children: [],
+            to: "dashboard-admin",
+          },
+          {
+            text: "File Upload",
+            icon: <FileUploadIcon />,
+            children: [],
+            to: "dashboard-admin",
+          },
+          {
+            text: "LogOut",
+            icon: <LogoutIcon />,
+            children: [],
+            to: "dashboard-admin",
+          },
           // Agrega más elementos según sea necesario
         ].map((item) => (
-          <ListItem key={item.text} disablePadding>
-            <ListItemButton>
-              <ListItemIcon sx={{color:"white"}}>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} sx={{color:"white"}} />
-            </ListItemButton>
-          </ListItem>
+          <React.Fragment key={item.text}>
+            <ListItem disablePadding>
+              {item.children.length > 0 ? (
+                <ListItemButton onClick={() => handleItemClick(item.text)}>
+                  <ListItemIcon sx={{ color: "white" }}>
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText primary={item.text} sx={{ color: "white" }} />
+                </ListItemButton>
+              ) : (
+                <ListItemButton component={Link} to={item.to}>
+                  <ListItemIcon sx={{ color: "white" }}>
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText primary={item.text} sx={{ color: "white" }} />
+                </ListItemButton>
+              )}
+            </ListItem>
+            {openItems[item.text] && (
+              <List sx={{ paddingLeft: 2 }}>
+                {item.children.map((child) => (
+                  <ListItem key={child.text} disablePadding>
+                    <ListItemButton>
+                      <ListItemIcon sx={{ color: "white" }}>
+                        {child.icon}
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={child.text}
+                        sx={{ color: "white" }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+              </List>
+            )}
+          </React.Fragment>
         ))}
       </List>
     </div>
@@ -77,7 +172,7 @@ export default function ResponsiveDrawer(props: Props) {
         sx={{
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           ml: { sm: `${drawerWidth}px` },
-          bgcolor: "#BAF266",
+          bgcolor: "#121212",
         }}
       >
         <Toolbar>
@@ -129,25 +224,25 @@ export default function ResponsiveDrawer(props: Props) {
           open
         >
           <div className="titulo-sidebar">
-              <div className="bloque-amarillo-2"></div>
-              <h1 className="titulo-sidebar">CUNOC LIBRARY</h1>
+            <div className="bloque-amarillo-2"></div>
+            <h1 className="titulo-sidebar">CUNOC LIBRARY</h1>
           </div>
           <div
             style={{
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              justifyContent: "center", 
+              justifyContent: "center",
               marginTop: "10%",
-              color: "white"
+              color: "white",
             }}
           >
             <img
               src="https://xsgames.co/randomusers/avatar.php?g=male"
               alt="Avatar"
               style={{
-                width: "150px", 
-                height: "150px", 
+                width: "150px",
+                height: "150px",
                 borderRadius: "50%",
               }}
             />

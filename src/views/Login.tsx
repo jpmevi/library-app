@@ -111,7 +111,15 @@ export default function SignIn() {
                 name="userId"
                 autoComplete="userId"
                 autoFocus
-                InputProps={{ style: { color: "white" } }}
+                sx={{
+                  "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#BAF266", 
+                  },
+                  "&:hover .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "white", 
+                  },
+                  }}
+                InputProps={{ style: { color: "white", borderColor: "white"} }}
                 InputLabelProps={{ style: { color: "white" } }}
               />
               <TextField
@@ -123,6 +131,14 @@ export default function SignIn() {
                 type="password"
                 id="password"
                 autoComplete="password"
+                sx={{
+                  "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#BAF266", 
+                  },
+                  "&:hover .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "white", 
+                  },
+                  }}
                 InputProps={{ style: { color: "white" } }}
                 InputLabelProps={{ style: { color: "white" } }}
               />
