@@ -24,6 +24,7 @@ import RunningWithErrorsIcon from "@mui/icons-material/RunningWithErrors";
 import LogoutIcon from "@mui/icons-material/Logout";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import { Link } from "react-router-dom";
+import AddIcon from '@mui/icons-material/Add';
 const drawerWidth = 240;
 
 interface Props {
@@ -84,8 +85,22 @@ export default function ResponsiveDrawer(props: Props) {
           {
             text: "Users",
             icon: <PeopleAltIcon />,
-            children: [],
-            to: "/user-list",
+            children: [
+              {
+                text: "Users List",
+                icon: <PeopleAltIcon />,
+                children: [],
+                to: "/user-list",
+              },
+              {
+                text: "Create User",
+                icon: <AddIcon />,
+                children: [],
+                to: "/user-create",
+              },
+
+            ],
+            to: "",
           },
           {
             text: "Careers",
@@ -109,7 +124,7 @@ export default function ResponsiveDrawer(props: Props) {
             text: "File Upload",
             icon: <FileUploadIcon />,
             children: [],
-            to: "dashboard-admin",
+            to: "../file-upload",
           },
           {
             text: "LogOut",
@@ -141,7 +156,7 @@ export default function ResponsiveDrawer(props: Props) {
               <List sx={{ paddingLeft: 2 }}>
                 {item.children.map((child) => (
                   <ListItem key={child.text} disablePadding>
-                    <ListItemButton>
+                    <ListItemButton component={Link} to={child.to}>
                       <ListItemIcon sx={{ color: "white" }}>
                         {child.icon}
                       </ListItemIcon>

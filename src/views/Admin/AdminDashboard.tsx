@@ -11,107 +11,87 @@ import SearchIcon from "@mui/icons-material/Search";
 import * as React from "react";
 import "../../styles/AdminDashboard.css";
 import { ThemeProvider } from "@emotion/react";
-const theme = createTheme({
-  palette: {
-    secondary: {
-      main: '#FFFFFF'
-    }
-  }
-});
-const books = [
-  {
-    id: 1,
-    title: "A Song of Ice and Fire",
-    imgSrc:
-      "https://react-magic-motion.nyc3.cdn.digitaloceanspaces.com/examples/search/song-of-ice-and-fire.jpeg",
-  },
-  {
-    id: 2,
-    title: "The Name of the Wind",
-    imgSrc:
-      "https://react-magic-motion.nyc3.cdn.digitaloceanspaces.com/examples/search/the-name-of-the-wind.jpeg",
-  },
-  {
-    id: 3,
-    title: "The Way of Kings",
-    imgSrc:
-      "https://react-magic-motion.nyc3.cdn.digitaloceanspaces.com/examples/search/the-way-of-kings.png",
-  },
-  {
-    id: 4,
-    title: "The Lies of Locke Lamora",
-    imgSrc:
-      "https://react-magic-motion.nyc3.cdn.digitaloceanspaces.com/examples/search/the-lies-of-locke-lamora.webp",
-  },
-  {
-    id: 5,
-    title: "Dune",
-    imgSrc:
-      "https://react-magic-motion.nyc3.cdn.digitaloceanspaces.com/examples/search/dune.jpeg",
-  },
-  {
-    id: 6,
-    title: "Neuromancer",
-    imgSrc:
-      "https://react-magic-motion.nyc3.cdn.digitaloceanspaces.com/examples/search/neuromancer.jpeg",
-  },
-  {
-    id: 7,
-    title: "Foundation",
-    imgSrc:
-      "https://react-magic-motion.nyc3.cdn.digitaloceanspaces.com/examples/search/foundation.jpeg",
-  },
-  {
-    id: 8,
-    title: "Ender's Game",
-    imgSrc:
-      "https://react-magic-motion.nyc3.cdn.digitaloceanspaces.com/examples/search/enders-game.jpg",
-  },
-  {
-    id: 9,
-    title: "The Girl with the Dragon Tattoo",
-    imgSrc:
-      "https://react-magic-motion.nyc3.cdn.digitaloceanspaces.com/examples/search/the-girl-with-the-dragon-tattoo.jpeg",
-  },
-  {
-    id: 10,
-    title: "Gone Girl",
-    imgSrc:
-      "https://react-magic-motion.nyc3.cdn.digitaloceanspaces.com/examples/search/gone-girl.jpeg",
-  }
-];
-function Book({ title, imgSrc }: { title: string; imgSrc: string }) {
-  return (
-    <div
-      style={{
-        borderRadius: "16px",
-        margin: "1%",
-        width: "274px",
-        display: "flex",
-        flexDirection: "column",
-        gap: "1px",
-        backgroundColor: "#595959",
-      }}
-    >
-      <h5
-        style={{
-          textAlign: "center",
-          fontWeight: "bold",
-          fontSize: "12",
-        }}
-      >
-        {title}
-      </h5>
-      <img
-        alt={`image of ${title}`}
-        src={imgSrc}
-        style={{ width: "auto", height: "225px", margin: "auto", marginBottom: "10px" }}
-      />
-    </div>
-  );
-}
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 
 export default function AdminDashbaord() {
+  const theme = createTheme({
+    palette: {
+      secondary: {
+        main: '#FFFFFF'
+      }
+    }
+  });
+  interface Book {
+    id: number;
+    isbnCode: string;
+    author: number;
+    title: string;
+    publicationDate: Date;
+    publisher: string;
+    availableCopies: number;
+    timesBorrowed:number,
+    imgSrc: string,
+  };
+  
+  const [books, setBooks] = useState<Book[]>([]);
+  const [page, setPage] = useState(0);
+  const [search, setSearch] = useState("");
+  const [totalPages, setTotalPages] = useState(10);
+  const navigate = useNavigate();
+  const auth = localStorage.getItem("auth");
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage - 1);
+    console.log(page);
+  };
+  function Book({ title, imgSrc }: { title: string; imgSrc: string }) {
+    return (
+      <div className="book">
+        <h5 className="bookTitle">
+          {title}
+        </h5>
+      <div className="bookImageContainer">
+        <img className="bookImage"
+          alt={`image of ${title}`}
+          src={imgSrc}
+        />
+        </div>
+      </div>
+    );
+  }
+  React.useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:8080/api/v1/books?page=" +
+            page +"&name="+search,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + auth,
+            },
+          }
+        );
+        const data = await response.json();
+        if (data.statusCode === 500) {
+          navigate("/login");
+        }
+        if (!response.ok) {
+          throw new Error("Error al cargar los libros");
+        }
+        console.log(data);
+        setBooks(data.data);
+        setTotalPages(data.totalPages);
+      } catch (error) {
+        navigate("/");
+        console.error(error);
+      }
+    };
+  
+    fetchBooks();
+  }, [page, search]);
   return (
     <ThemeProvider theme={theme}>
     <div className="admin-dashboard">
@@ -120,6 +100,7 @@ export default function AdminDashbaord() {
           className="search-input"
           placeholder="Search Book Name"
           inputProps={{ "aria-label": "search book name" }}
+          onChange={(e) => setSearch(e.target.value)}
         />
         <IconButton
           className="search-button"
@@ -146,11 +127,11 @@ export default function AdminDashbaord() {
                 .includes("".toLowerCase().trim())
             )
             .map(({ id, title, imgSrc }) => (
-              <Book key={id} title={title} imgSrc={imgSrc} />
+              <Book key={id} title={title} imgSrc={imgSrc ? imgSrc : "https://islandpress.org/files/default_book_cover_2015.jpg"} />
             ))}
         </div>
       </div>
-      <Pagination className="pagination-container" count={10} color="secondary" />
+      <Pagination onChange={handleChangePage} className="pagination-container" count={totalPages} color="secondary" />
     </div>
     </ThemeProvider>
   );
