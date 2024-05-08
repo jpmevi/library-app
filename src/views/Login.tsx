@@ -3,12 +3,10 @@ import * as React from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import MenuBookSharpIcon from '@mui/icons-material/MenuBookSharp';
+import MenuBookSharpIcon from "@mui/icons-material/MenuBookSharp";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { useNavigate } from "react-router-dom";
@@ -27,6 +25,7 @@ function Copyright(props: any) {
 }
 
 export default function SignIn() {
+  const [loginError, setLoginError] = React.useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -50,6 +49,7 @@ export default function SignIn() {
         localStorage.setItem("auth", dataJson.token);
         localStorage.setItem("username", userId);
         localStorage.setItem("role", dataJson.role);
+        setLoginError(false);
         if (dataJson.role === "ROLE_ADMINISTRATOR") {
           navigate("/dashboard-admin");
         } else {
@@ -60,6 +60,7 @@ export default function SignIn() {
         // La solicitud no fue exitosa, maneja el error o muestra un mensaje
       }
     } catch (error) {
+      setLoginError(true);
       console.error("Error al procesar la solicitud:", error);
     }
   };
@@ -91,7 +92,7 @@ export default function SignIn() {
             </Typography>
 
             <Avatar sx={{ m: 1, bgcolor: "#BAF266" }}>
-              <MenuBookSharpIcon sx={{color:"black"}} />
+              <MenuBookSharpIcon sx={{ color: "black" }} />
             </Avatar>
             <Typography component="h1" variant="h5">
               LOG IN
@@ -111,7 +112,16 @@ export default function SignIn() {
                 name="userId"
                 autoComplete="userId"
                 autoFocus
-                InputProps={{ style: { color: "white" } }}
+                sx={{
+                  "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#BAF266",
+                  },
+                  "&:hover .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":
+                    {
+                      borderColor: "white",
+                    },
+                }}
+                InputProps={{ style: { color: "white", borderColor: "white" } }}
                 InputLabelProps={{ style: { color: "white" } }}
               />
               <TextField
@@ -123,9 +133,31 @@ export default function SignIn() {
                 type="password"
                 id="password"
                 autoComplete="password"
+                sx={{
+                  "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#BAF266",
+                  },
+                  "&:hover .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":
+                    {
+                      borderColor: "white",
+                    },
+                }}
                 InputProps={{ style: { color: "white" } }}
                 InputLabelProps={{ style: { color: "white" } }}
               />
+              {loginError && (
+                <div
+                  style={{
+                    display: "flex",
+                    backgroundColor: "red",
+                    justifyContent: "center",
+                    padding: "10px",
+                    borderRadius: "16px"
+                  }}
+                >
+                  User and Password are required
+                </div>
+              )}
               <Button
                 className="button"
                 type="submit"
@@ -148,9 +180,13 @@ export default function SignIn() {
                   <Link
                     href="#"
                     variant="body2"
-                    sx={{ color: "#BAF266", textDecorationColor: "#BAF266",'&:hover': {
-                      textDecorationColor: 'white', 
-                    }, }}
+                    sx={{
+                      color: "#BAF266",
+                      textDecorationColor: "#BAF266",
+                      "&:hover": {
+                        textDecorationColor: "white",
+                      },
+                    }}
                   >
                     Forgot pin?
                   </Link>
@@ -163,7 +199,7 @@ export default function SignIn() {
                       color: "#BAF266",
                       textDecorationColor: "#BAF266",
                       "&:hover": {
-                        textDecorationColor: "white", 
+                        textDecorationColor: "white",
                       },
                     }}
                   >

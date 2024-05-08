@@ -8,6 +8,8 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import IconButton from "@mui/material/IconButton";
+import { Pagination, createTheme } from "@mui/material";
+import { ThemeProvider } from "@emotion/react";
 
 export interface Column {
   id: string;
@@ -19,7 +21,7 @@ export interface Column {
 
 interface Action {
   icon: React.ReactElement;
-  onClick: () => void;
+  onClick: (id: string) => void;
 }
 
 interface Data {
@@ -31,56 +33,102 @@ interface StickyHeadTableProps {
   rows: any[];
   actions?: Action[];
   page: number;
-  rowsPerPage: number;
+  totalPages: number;
   handleChangePage: (event: unknown, newPage: number) => void;
-  handleChangeRowsPerPage: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function StickyHeadTable(props: StickyHeadTableProps) {
-
-  const { columns, rows, actions, page, rowsPerPage, handleChangePage, handleChangeRowsPerPage } = props;
-
-  
+  const { columns, rows, actions, page, totalPages, handleChangePage } = props;
+  const theme = createTheme({
+    palette: {
+      secondary: {
+        main: "#FFFFFF",
+      },
+    },
+  });
   return (
-    <Paper sx={{ width: "100%", overflow: "hidden" }}>
-      <TableContainer sx={{ maxHeight: 440 }}>
-        <Table stickyHeader aria-label="sticky table">
-          <TableHead>
-            <TableRow>
-              {columns.map((column) => (
-                <TableCell
-                  key={column.id}
-                  align={column.align}
-                  style={{ minWidth: column.minWidth }}
+    <ThemeProvider theme={theme}>
+      <Paper
+        className="paperContainer"
+        sx={{ width: "100%", overflow: "hidden", backgroundColor: "#383838"}}
+      >
+        <TableContainer sx={{ maxHeight: 440 }}>
+          <Table stickyHeader aria-label="sticky table">
+            <TableHead>
+              <TableRow>
+                {columns.map((column) => (
+                  <TableCell
+                    key={column.id}
+                    align={column.align}
+                    sx={{
+                      minWidth: column.minWidth,
+                      backgroundColor: "#BAF266",
+                      color: "black", 
+                      
+                    }}
+                  >
+                    {column.label}
+                  </TableCell>
+                ))}
+                {actions && (
+                  <TableCell sx={{
+                    backgroundColor: "#BAF266",
+                    color: "black",
+                    '&:hover': {
+                      backgroundColor: "#4CAF50", // Hover color for action cell
+                    },
+                  }}>
+                    Actions
+                  </TableCell>
+                )}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rows.map((row, rowIndex) => (
+                <TableRow key={rowIndex} hover role="checkbox" tabIndex={-1}
+                  sx={{
+                    '&:hover': {
+                      backgroundColor: "#DAF280",
+                      color: "black" // Hover color for table rows
+                    },
+                  }}
                 >
-                  {column.label}
-                </TableCell>
-              ))}
-              {actions && actions.length > 0 && <TableCell>Actions</TableCell>}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row, rowIndex) => (
-                <TableRow key={rowIndex} hover role="checkbox" tabIndex={-1}>
                   {columns.map((column) => {
                     const value = row[column.id];
                     return (
-                      <TableCell key={column.id} align={column.align}>
+                      <TableCell key={column.id} align={column.align} sx={{
+                        backgroundColor: "#383838",
+                        color: "white",
+                        '&:hover': {
+                          backgroundColor: "#DAF280",
+                          color: "black"// Ensuring hover effect
+                        },
+                      }}>
                         {column.format && typeof value === "number"
-                          ? column.format(value as number)
+                          ? column.format(value)
                           : value}
                       </TableCell>
                     );
                   })}
-                  {actions && actions.length > 0 && (
-                    <TableCell align="center">
+                  {actions && (
+                    <TableCell align="center" sx={{
+                      backgroundColor: "#383838",
+                      color: "white",
+                      '&:hover': {
+                        color: "black"
+                      },
+                    }}>
                       {actions.map((action, index) => (
                         <IconButton
                           key={index}
-                          aria-label={`Action ${index + 1}`}
-                          onClick={action.onClick}
+                          sx={{
+                            color: "white",
+                            '&:hover': {
+                              backgroundColor: "white",
+                              color: "black", // Hover effect for icons
+                            },
+                          }}
+                          onClick={() => action.onClick(row.userId)}
                         >
                           {action.icon}
                         </IconButton>
@@ -89,18 +137,16 @@ export default function StickyHeadTable(props: StickyHeadTableProps) {
                   )}
                 </TableRow>
               ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[10]}
-        component="div"
-        count={rows.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-    </Paper>
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <Pagination
+          className="pagination-container"
+          count={totalPages}
+          onChange={handleChangePage}
+          color="secondary"
+        />
+      </Paper>
+    </ThemeProvider>
   );
 }
