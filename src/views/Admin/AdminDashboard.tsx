@@ -12,7 +12,7 @@ import * as React from "react";
 import "../../styles/AdminDashboard.css";
 import { ThemeProvider } from "@emotion/react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 
 export default function AdminDashbaord() {
@@ -45,8 +45,9 @@ export default function AdminDashbaord() {
     setPage(newPage - 1);
     console.log(page);
   };
-  function Book({ title, imgSrc }: { title: string; imgSrc: string }) {
+  function Book({ title, imgSrc,id }: { title: string; imgSrc: string, id:number }) {
     return (
+      <Link to={`/book-update/${id}`} className="book">
       <div className="book">
         <h5 className="bookTitle">
           {title}
@@ -58,6 +59,7 @@ export default function AdminDashbaord() {
         />
         </div>
       </div>
+      </Link>
     );
   }
   React.useEffect(() => {
@@ -127,7 +129,7 @@ export default function AdminDashbaord() {
                 .includes("".toLowerCase().trim())
             )
             .map(({ id, title, imgSrc }) => (
-              <Book key={id} title={title} imgSrc={imgSrc ? imgSrc : "https://islandpress.org/files/default_book_cover_2015.jpg"} />
+              <Book key={id} title={title} imgSrc={imgSrc ? imgSrc : "https://islandpress.org/files/default_book_cover_2015.jpg"} id={id}/>
             ))}
         </div>
       </div>

@@ -25,6 +25,9 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import { Link } from "react-router-dom";
 import AddIcon from '@mui/icons-material/Add';
+import { Edit } from "@mui/icons-material";
+import BackHandIcon from '@mui/icons-material/BackHand';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 const drawerWidth = 240;
 
 interface Props {
@@ -69,16 +72,10 @@ export default function ResponsiveDrawer(props: Props) {
             to: "",
             children: [
               {
-                text: "Fiction",
-                icon: <AssessmentIcon />,
+                text: "Create Book",
+                icon: <AddIcon />,
                 children: [],
-                to: "dashboard-admin",
-              },
-              {
-                text: "Non-Fiction",
-                icon: <AssessmentIcon />,
-                children: [],
-                to: "dashboard-admin",
+                to: "/book-create",
               },
             ],
           },
@@ -105,20 +102,111 @@ export default function ResponsiveDrawer(props: Props) {
           {
             text: "Careers",
             icon: <SchoolIcon />,
-            children: [],
-            to: "dashboard-admin",
+            children: [
+              {
+                text: "Careers List",
+                icon: <SchoolIcon />,
+                children: [],
+                to: "/career-list",
+              },
+              {
+                text: "Create Career",
+                icon: <AddIcon />,
+                children: [],
+                to: "/career-create",
+              },
+
+            ],
+            to: "",
           },
           {
             text: "Loans",
             icon: <CreditScoreIcon />,
-            children: [],
-            to: "dashboard-admin",
+            children: [
+              {
+                text: "Create Loan",
+                icon: <AddIcon />,
+                children: [],
+                to: "/book-search",
+              },
+              {
+                text: "Return Book",
+                icon: <BackHandIcon />,
+                children: [],
+                to: "/return-book",
+              },
+            ],
+            to: "",
           },
           {
-            text: "Arrears",
-            icon: <RunningWithErrorsIcon />,
-            children: [],
-            to: "dashboard-admin",
+            text: "Reports",
+            icon: <AssessmentIcon />,
+            children: [
+              {
+                text: "Loans Today",
+                icon: <CalendarTodayIcon />,
+                children: [],
+                to: "/report-loans-today",
+              },
+              {
+                text: "Loans in Arrears",
+                icon: <RunningWithErrorsIcon />,
+                children: [],
+                to: "/report-loans-in-arrears",
+              },
+              {
+                text: "Total Collected",
+                icon: <RunningWithErrorsIcon />,
+                children: [],
+                to: "/report-total-collected",
+              },
+              {
+                text: "Most Borrowing Career",
+                icon: <RunningWithErrorsIcon />,
+                children: [],
+                to: "/report-most-borrowing-career",
+              },
+
+              {
+                text: "Arrears By Student",
+                icon: <RunningWithErrorsIcon />,
+                children: [],
+                to: "/report-arrears-by-student",
+              },
+
+              {
+                text: "Loans By Student",
+                icon: <RunningWithErrorsIcon />,
+                children: [],
+                to: "/report-loans-by-student",
+              },
+
+              {
+                text: "Book Out of Copies",
+                icon: <RunningWithErrorsIcon />,
+                children: [],
+                to: "/report-books-out-of-copies",
+              },
+              {
+                text: "Never Borrowed Books",
+                icon: <RunningWithErrorsIcon />,
+                children: [],
+                to: "/report-books-never-borrowed",
+              },
+              {
+                text: "Sanctioned Students",
+                icon: <RunningWithErrorsIcon />,
+                children: [],
+                to: "/report-sanctioned-students",
+              },
+              {
+                text: "Most Borrowing Student",
+                icon: <RunningWithErrorsIcon />,
+                children: [],
+                to: "/report-most-borrowing-student",
+              },
+            ],
+            to: "",
           },
           {
             text: "File Upload",
