@@ -128,7 +128,7 @@ export default function StickyHeadTable(props: StickyHeadTableProps) {
                               color: "black", // Hover effect for icons
                             },
                           }}
-                          onClick={() => action.onClick(row.userId)}
+                          onClick={() => action.onClick(row.userId ? row.userId : row.id ? row.id : row.code)}
                         >
                           {action.icon}
                         </IconButton>

@@ -13,35 +13,24 @@ import EditIcon from "@mui/icons-material/Edit";
 import { ToastContainer, toast } from "react-toastify";
 import SearchIcon from "@mui/icons-material/Search";
 import "react-toastify/dist/ReactToastify.css";
-const columns: Column[] = [
-  { id: "userId", label: "userId", minWidth: 100, align: "center" },
-  { id: "name", label: "name", minWidth: 100, align: "center" },
-  { id: "careerId", label: "careerId", minWidth: 100, align: "center" },
-  {
-    id: "birthDate",
-    label: "birthDate",
-    minWidth: 150,
-    align: "center",
-  },
-  { id: "role", label: "role", minWidth: 100, align: "center" },
-];
 
-function UserList() {
-  const username = localStorage.getItem("username");
+function CareerList() {
+  const columns: Column[] = [
+    { id: "code", label: "Code", minWidth: 100, align: "center" },
+    { id: "name", label: "Name", minWidth: 100, align: "center" },
+  ];
+  const careername = localStorage.getItem("careername");
   const auth = localStorage.getItem("auth");
   const accountNumber = localStorage.getItem("accountNumber");
   const navigate = useNavigate();
-  interface User {
-    userId: string;
+  interface Career {
+    code: string;
     name: string;
-    careerId: number;
-    birthDate: string;
-    role: string;
   }
-  const handleDelete = async (userId: string) => {
+  const handleDelete = async (careerId: string) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/users/${userId}`,
+        `http://localhost:8080/api/v1/careers/${careerId}`,
         {
           method: "DELETE",
           headers: {
@@ -55,11 +44,11 @@ function UserList() {
       }
       const data = await response.json();
       // Filtrar el usuario eliminado del estado local
-      setHistory(history.filter((user) => user.userId !== userId));
-      toast.success(`Usuario ${userId} eliminado correctamente`);
+      setCareers(careers.filter((career) => career.code !== careerId));
+      toast.success(`Career ${careerId} succesfully deleted`);
     } catch (error) {
-      console.error("Error al eliminar el usuario:", error);
-      toast.error("Error al eliminar el usuario: " + error);
+      console.error("Error to eliminate career:", error);
+      toast.error("Error  to eliminate career: " + error);
       navigate("/");
     }
   };
@@ -71,10 +60,10 @@ function UserList() {
     },
     {
       icon: <EditIcon />,
-      onClick: (userId: string) => navigate(`/users-update/${userId}`), // Modificado para incluir userId en la URL
+      onClick: (careerId: string) => navigate(`/career-update/${careerId}`), // Modificado para incluir careerId en la URL
     },
   ];
-  const [history, setHistory] = useState<User[]>([]);
+  const [careers, setCareers] = useState<Career[]>([]);
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState("");
   const [totalPages, setTotalPages] = useState(10);
@@ -88,9 +77,9 @@ function UserList() {
     const fetchComments = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8080/api/v1/users?page=" +
+          "http://localhost:8080/api/v1/careers?page=" +
             page +
-            "&userId=" +
+            "&careerName=" +
             search,
           {
             method: "GET",
@@ -105,10 +94,10 @@ function UserList() {
           navigate("/login");
         }
         if (!response.ok) {
-          throw new Error("Error al cargar los usuarios");
+          throw new Error("Error to fetch careers");
         }
         console.log(data);
-        setHistory(data.data);
+        setCareers(data.data);
         setTotalPages(data.totalPages);
       } catch (error) {
         navigate("/");
@@ -133,13 +122,13 @@ function UserList() {
         pauseOnHover
       />
       <ResponsiveDrawer />
-      <div className="listUsersContainer">
-        <h1 className="titleContainer">LISTADO DE USUARIOS</h1>
+      <div className="listCareersContainer">
+        <h1 className="titleContainer">CAREERS LIST</h1>
         <div className="search-container">
           <InputBase
             className="search-input"
-            placeholder="Search UserId"
-            inputProps={{ "aria-label": "search userId" }}
+            placeholder="Search CareerId"
+            inputProps={{ "aria-label": "search careerName" }}
             onChange={(e) => setSearch(e.target.value)}
           />
           <IconButton
@@ -155,7 +144,7 @@ function UserList() {
           <div className="tableContainer">
             <StickyHeadTable
               columns={columns}
-              rows={history}
+              rows={careers}
               page={page}
               totalPages={totalPages}
               handleChangePage={handleChangePage}
@@ -168,4 +157,4 @@ function UserList() {
   );
 }
 
-export default UserList;
+export default CareerList;

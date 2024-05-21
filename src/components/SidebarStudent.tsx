@@ -1,9 +1,9 @@
-import * as React from "react";
+import React, { useEffect } from "react";
 import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
+import Badge from "@mui/material/Badge";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -11,48 +11,101 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import HomeIcon from "@mui/icons-material/Home";
 import ListItemText from "@mui/material/ListItemText";
-import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
-import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
+import LogoutIcon from "@mui/icons-material/Logout";
+import CreditScoreIcon from "@mui/icons-material/CreditScore";
 import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
+import AddIcon from "@mui/icons-material/Add";
+import BackHandIcon from "@mui/icons-material/BackHand";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import Modal from "@mui/material/Modal";
 import Typography from "@mui/material/Typography";
-import SchoolIcon from "@mui/icons-material/School";
-import MenuBookSharpIcon from "@mui/icons-material/MenuBookSharp";
-import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
-import CreditScoreIcon from "@mui/icons-material/CreditScore";
-import RunningWithErrorsIcon from "@mui/icons-material/RunningWithErrors";
-import LogoutIcon from "@mui/icons-material/Logout";
-import FileUploadIcon from "@mui/icons-material/FileUpload";
 import { Link } from "react-router-dom";
-import AddIcon from '@mui/icons-material/Add';
-import { Edit } from "@mui/icons-material";
-import BackHandIcon from '@mui/icons-material/BackHand';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import DeleteIcon from "@mui/icons-material/Delete";
+import { Box } from "@mui/material";
 const drawerWidth = 240;
 
 interface Props {
-  /**
-   * Injected by the documentation to work in an iframe.
-   * Remove this when copying and pasting into your project.
-   */
   window?: () => Window;
 }
 
-export default function ResponsiveDrawer(props: Props) {
+interface Notification {
+  id: number;
+  message: string;
+  isRead: boolean;
+}
+
+export default function ResponsiveDrawerStudent(props: Props) {
+  const auth = localStorage.getItem("auth");
   const { window } = props;
   const [openItems, setOpenItems] = React.useState<{ [key: string]: boolean }>(
     {}
   );
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [notifications, setNotifications] = React.useState<Notification[]>([]);
+  const [openNotifications, setOpenNotifications] = React.useState(false);
+
   const username = localStorage.getItem("username");
+
+  const handleDelete = async (id: number) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/v1/notifications/${id}/read`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${auth}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Error al eliminar la notificacion");
+      }
+      const data = await response.json();
+      setNotifications(notifications.filter(notification => notification.id !== id));
+    } catch (error) {
+      console.error("Error al eliminar notificacion:", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      const response = await fetch(
+        `http://localhost:8080/api/v1/notifications/${username}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + auth,
+          },
+        }
+      );
+      const data = await response.json();
+      if (data.data.length > 0) {
+        setNotifications(data.data);
+      } else {
+        setNotifications([]);
+      }
+    };
+
+    fetchNotifications();
+  }, [username]);
+
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
+
   const handleItemClick = (text: any) => {
     setOpenItems((prevOpenItems) => ({
       ...prevOpenItems,
       [text]: !prevOpenItems[text],
     }));
+  };
+
+  const handleNotificationsClick = () => {
+    setOpenNotifications(true);
+  };
+
+  const handleCloseNotifications = () => {
+    setOpenNotifications(false);
   };
 
   const drawer = (
@@ -64,155 +117,32 @@ export default function ResponsiveDrawer(props: Props) {
             text: "Home",
             icon: <HomeIcon />,
             children: [],
-            to: "/dashboard-admin",
-          },
-          {
-            text: "Books",
-            icon: <MenuBookSharpIcon />,
-            to: "",
-            children: [
-              {
-                text: "Create Book",
-                icon: <AddIcon />,
-                children: [],
-                to: "/book-create",
-              },
-            ],
-          },
-          {
-            text: "Users",
-            icon: <PeopleAltIcon />,
-            children: [
-              {
-                text: "Users List",
-                icon: <PeopleAltIcon />,
-                children: [],
-                to: "/user-list",
-              },
-              {
-                text: "Create User",
-                icon: <AddIcon />,
-                children: [],
-                to: "/user-create",
-              },
-
-            ],
-            to: "",
-          },
-          {
-            text: "Careers",
-            icon: <SchoolIcon />,
-            children: [
-              {
-                text: "Careers List",
-                icon: <SchoolIcon />,
-                children: [],
-                to: "/career-list",
-              },
-              {
-                text: "Create Career",
-                icon: <AddIcon />,
-                children: [],
-                to: "/career-create",
-              },
-
-            ],
-            to: "",
+            to: "/dashboard-student",
           },
           {
             text: "Loans",
             icon: <CreditScoreIcon />,
             children: [
               {
-                text: "Create Loan",
+                text: "Current Loans",
                 icon: <AddIcon />,
                 children: [],
-                to: "/book-search",
+                to: "/student-loans",
               },
               {
-                text: "Return Book",
+                text: "Loan History",
                 icon: <BackHandIcon />,
                 children: [],
-                to: "/return-book",
+                to: "/history-loans",
               },
             ],
             to: "",
           },
           {
-            text: "Reports",
+            text: "Reservations",
             icon: <AssessmentIcon />,
-            children: [
-              {
-                text: "Loans Today",
-                icon: <CalendarTodayIcon />,
-                children: [],
-                to: "/report-loans-today",
-              },
-              {
-                text: "Loans in Arrears",
-                icon: <RunningWithErrorsIcon />,
-                children: [],
-                to: "/report-loans-in-arrears",
-              },
-              {
-                text: "Total Collected",
-                icon: <RunningWithErrorsIcon />,
-                children: [],
-                to: "/report-total-collected",
-              },
-              {
-                text: "Most Borrowing Career",
-                icon: <RunningWithErrorsIcon />,
-                children: [],
-                to: "/report-most-borrowing-career",
-              },
-
-              {
-                text: "Arrears By Student",
-                icon: <RunningWithErrorsIcon />,
-                children: [],
-                to: "/report-arrears-by-student",
-              },
-
-              {
-                text: "Loans By Student",
-                icon: <RunningWithErrorsIcon />,
-                children: [],
-                to: "/report-loans-by-student",
-              },
-
-              {
-                text: "Book Out of Copies",
-                icon: <RunningWithErrorsIcon />,
-                children: [],
-                to: "/report-books-out-of-copies",
-              },
-              {
-                text: "Never Borrowed Books",
-                icon: <RunningWithErrorsIcon />,
-                children: [],
-                to: "/report-books-never-borrowed",
-              },
-              {
-                text: "Sanctioned Students",
-                icon: <RunningWithErrorsIcon />,
-                children: [],
-                to: "/report-sanctioned-students",
-              },
-              {
-                text: "Most Borrowing Student",
-                icon: <RunningWithErrorsIcon />,
-                children: [],
-                to: "/report-most-borrowing-student",
-              },
-            ],
-            to: "",
-          },
-          {
-            text: "File Upload",
-            icon: <FileUploadIcon />,
             children: [],
-            to: "../file-upload",
+            to: "/reservations",
           },
           {
             text: "LogOut",
@@ -220,7 +150,6 @@ export default function ResponsiveDrawer(props: Props) {
             children: [],
             to: "/",
           },
-          // Agrega más elementos según sea necesario
         ].map((item) => (
           <React.Fragment key={item.text}>
             <ListItem disablePadding>
@@ -263,7 +192,6 @@ export default function ResponsiveDrawer(props: Props) {
     </div>
   );
 
-  // Remove this const when copying and pasting into your project.
   const container =
     window !== undefined ? () => window().document.body : undefined;
 
@@ -288,6 +216,15 @@ export default function ResponsiveDrawer(props: Props) {
           >
             <MenuIcon />
           </IconButton>
+          <IconButton
+            color="inherit"
+            onClick={handleNotificationsClick}
+            sx={{ ml: "auto" }}
+          >
+            <Badge badgeContent={notifications.length} color="error">
+              <NotificationsIcon />
+            </Badge>
+          </IconButton>
         </Toolbar>
       </AppBar>
       <Box
@@ -295,14 +232,13 @@ export default function ResponsiveDrawer(props: Props) {
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
         aria-label="mailbox folders"
       >
-        {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
         <Drawer
           container={container}
           variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}
           ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
+            keepMounted: true,
           }}
           sx={{
             display: { xs: "block", sm: "none" },
@@ -354,6 +290,68 @@ export default function ResponsiveDrawer(props: Props) {
           {drawer}
         </Drawer>
       </Box>
+      <Modal
+        open={openNotifications}
+        onClose={handleCloseNotifications}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            border: "2px solid #000",
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Notifications
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <ul>
+                {notifications.map((notification) => (
+                  <div
+                    key={notification.id}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <li>{notification.message}</li>
+                    <IconButton
+                      sx={{
+                        height: "100%",
+                        bgcolor: "red",
+                        color: "white",
+                        "&:hover": {
+                          backgroundColor: "white",
+                          color: "black",
+                        },
+                      }}
+                      onClick={() => handleDelete(notification.id)} // Update here
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </div>
+                ))}
+              </ul>
+            </div>
+          </Typography>
+        </Box>
+      </Modal>
     </Box>
   );
 }

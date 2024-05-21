@@ -9,6 +9,7 @@ import {
   Button,
   Container,
   Grid,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
@@ -18,12 +19,14 @@ import {
   createTheme,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
+import { red } from "@mui/material/colors";
 
-function BookCreate() {
+function BookEdit() {
   const auth = localStorage.getItem("auth");
   const navigate = useNavigate();
   interface Book {
@@ -33,18 +36,17 @@ function BookCreate() {
     publicationDate?: string;
     publisher?: string;
     availableCopies?: number;
-    timesBorrowed?:number,
-    imgUrl?: string,
-  };
+    timesBorrowed?: number;
+    imgUrl?: string;
+  }
   interface Career {
     id: number;
     name: string;
   }
 
+  const { bookId } = useParams();
   const [book, setBook] = useState<Book>();
-  const [career, setCareer] = useState<Career[]>([]);
   const [image, setImage] = useState<string | undefined>("");
-  const [role, setRole] = useState<string | undefined>("");
   const [formErrors, setFormErrors] = useState({
     isbnCode: "",
     author: "",
@@ -52,7 +54,7 @@ function BookCreate() {
     publicationDate: "",
     publisher: "",
     availableCopies: "",
-    imgUrl: ""
+    imgUrl: "",
   });
   const theme = createTheme({
     components: {
@@ -70,9 +72,73 @@ function BookCreate() {
   });
 
   useEffect(() => {
-    
+    const fetchBook = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/v1/books/${bookId}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + auth,
+            },
+          }
+        );
+        const data = await response.json();
+        if (data.statusCode === 500) {
+          toast.error(data.message);
+          setTimeout(() => {
+            navigate("/");
+          }, 2000);
+        }
+        if (!response.ok) {
+          toast.error(data.message);
+          setTimeout(() => {
+            navigate("/");
+          }, 2000);
+        }
+        console.log(data);
+        setBook(data.data);
+        setImage(data.data.imgUrl);
+      } catch (error) {
+        toast.error("Error al procesar la solicitud:");
+        console.error("Error al procesar la solicitud:", error);
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
+      }
+    };
+    fetchBook();
   }, []);
 
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/v1/books/${bookId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${auth}`,
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Error al eliminar el book");
+      }
+      const data = await response.json();
+      toast.success(`Book ${bookId} successfully deleted`);
+      setTimeout(() => {
+        navigate("/dashboard-admin");
+      }, 1000);
+    } catch (error) {
+      console.error("Error al eliminar el book:", error);
+      toast.error("Error al eliminar el book: " + error);
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
+    }
+  };
   const handleChangeDate = (newValue: dayjs.Dayjs | null) => {
     setBook((prev) => ({
       ...prev,
@@ -102,9 +168,9 @@ function BookCreate() {
     // Si la validación es exitosa, procede con la petición fetch u otra lógica
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/books`,
+        `http://localhost:8080/api/v1/books/${bookId}`,
         {
-          method: "POST",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${auth}`,
@@ -125,7 +191,7 @@ function BookCreate() {
           toast.error(dataJson.message);
         }
       } else {
-        toast.success("libro creado exitosamente");
+        toast.success("Book successfuly updated");
         setTimeout(() => {
           navigate("/dashboard-admin");
         }, 2000);
@@ -162,7 +228,7 @@ function BookCreate() {
       formIsValid = false;
       errors["availableCopies"] = "Available Copies is required.";
     }
-    
+
 
     setFormErrors(errors);
     return formIsValid;
@@ -185,7 +251,6 @@ function BookCreate() {
           />
           <ResponsiveDrawer />
           <div className="bookPageContainer">
-            <h1 className="titleContainer">CREATE BOOK</h1>
             <div className="createBookContainer">
               <Box
                 sx={{
@@ -207,10 +272,8 @@ function BookCreate() {
                       alt={`image`}
                       src={
                         image
-                        ? 
-                        image
-                        :
-                        "https://islandpress.org/files/default_book_cover_2015.jpg"
+                          ? image
+                          : "https://islandpress.org/files/default_book_cover_2015.jpg"
                       }
                     />
                   </div>
@@ -230,20 +293,32 @@ function BookCreate() {
                       variant="h5"
                       fontWeight="bold"
                     >
-                      CUNOC LIBRARY
+                      UPDATE BOOK
                     </Typography>
 
-                    <Avatar sx={{ m: 1, bgcolor: "#BAF266" }}>
-                      <EditIcon sx={{ color: "black" }} />
-                    </Avatar>
+                    <IconButton
+                      sx={{
+                        bgcolor: "red",
+                        color: "white",
+                        "&:hover": {
+                          backgroundColor: "white",
+                          color: "black",
+                        },
+                      }}
+                      onClick={handleDelete}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
                     <Box
                       component="form"
                       onSubmit={handleSubmit}
                       noValidate
                       sx={{ mt: 1, width: "100%", maxWidth: "100%" }}
                     >
+                      <InputLabel sx={{ color: "white" }} id="isbnCode">
+                        ISBN Code
+                      </InputLabel>
                       <TextField
-                        label="ISBN Code"
                         error={!!formErrors.isbnCode}
                         helperText={formErrors.isbnCode}
                         margin="normal"
@@ -252,8 +327,8 @@ function BookCreate() {
                         id="isbnCode"
                         name="isbnCode"
                         autoComplete="isbnCode"
-                        autoFocus
                         onChange={handleChange}
+                        value={book?.isbnCode}
                         sx={{
                           marginTop: 0,
                           "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":
@@ -268,15 +343,18 @@ function BookCreate() {
                         InputProps={{ style: { color: "white" } }}
                         InputLabelProps={{ style: { color: "white" } }}
                       />
+                      <InputLabel sx={{ color: "white" }} id="author">
+                        Author
+                      </InputLabel>
                       <TextField
                         error={!!formErrors.author}
                         helperText={formErrors.author}
                         margin="normal"
                         required
                         fullWidth
-                        label="Author"
                         name="author"
                         id="author"
+                        value={book?.author}
                         autoComplete="author"
                         onChange={handleChange}
                         sx={{
@@ -293,8 +371,11 @@ function BookCreate() {
                         InputProps={{ style: { color: "white" } }}
                         InputLabelProps={{ style: { color: "white" } }}
                       />
-                       <TextField
-                        label="Title"
+                      <InputLabel sx={{ color: "white" }} id="title">
+                        Title
+                      </InputLabel>
+                      <TextField
+                        value={book?.title}
                         error={!!formErrors.title}
                         helperText={formErrors.title}
                         margin="normal"
@@ -319,6 +400,7 @@ function BookCreate() {
                         InputLabelProps={{ style: { color: "white" } }}
                       />
                       <DatePicker
+                        value={dayjs(book?.publicationDate)}
                         label="Publication Date"
                         name="publicationDate"
                         onChange={handleChangeDate}
@@ -335,15 +417,17 @@ function BookCreate() {
                               borderColor: "white",
                             },
                         }}
-                       
                       />
+                      <InputLabel sx={{ color: "white" }} id="publisher">
+                        Publisher
+                      </InputLabel>
                       <TextField
+                        value={book?.publisher}
                         error={!!formErrors.publisher}
                         helperText={formErrors.publisher}
                         margin="normal"
                         fullWidth
                         name="publisher"
-                        label="Publisher"
                         type="publisher"
                         id="publisher"
                         autoComplete="publisher"
@@ -362,13 +446,16 @@ function BookCreate() {
                         InputProps={{ style: { color: "white" } }}
                         InputLabelProps={{ style: { color: "white" } }}
                       />
+                      <InputLabel sx={{ color: "white" }} id="availableCopies">
+                        Available Copies
+                      </InputLabel>
                       <TextField
+                        value={book?.availableCopies}
                         error={!!formErrors.availableCopies}
                         helperText={formErrors.availableCopies}
                         margin="normal"
                         fullWidth
                         name="availableCopies"
-                        label="Available Copies"
                         type="number"
                         id="availableCopies"
                         autoComplete="availableCopies"
@@ -387,11 +474,14 @@ function BookCreate() {
                         InputProps={{ style: { color: "white" } }}
                         InputLabelProps={{ style: { color: "white" } }}
                       />
+                      <InputLabel sx={{ color: "white" }} id="imgUrl">
+                        Img Url
+                      </InputLabel>
                       <TextField
+                        value={book?.imgUrl}
                         margin="normal"
                         fullWidth
                         name="imgUrl"
-                        label="Image Url"
                         id="imgUrl"
                         autoComplete="imgUrl"
                         onChange={handleChangeImage}
@@ -418,13 +508,14 @@ function BookCreate() {
                           mt: 3,
                           mb: 2,
                           color: "black",
+                          margin: 0,
                           backgroundColor: "#BAF266",
                           "&:hover": {
                             backgroundColor: "white",
                           },
                         }}
                       >
-                        Create
+                        Update
                       </Button>
                     </Box>
                   </Box>
@@ -438,4 +529,4 @@ function BookCreate() {
   );
 }
 
-export default BookCreate;
+export default BookEdit;

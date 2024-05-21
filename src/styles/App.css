@@ -98,6 +98,16 @@
   height: 80%;
 }
 
+.listCareersContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1%;
+  border-radius: 16px;
+  flex-direction: column;
+  height: 80%;
+}
+
 .fileUploadContainer {
   display: flex;
   align-items: center;
@@ -118,6 +128,16 @@
   height: 70%;
   width: 100%;
 }
+.bookPageContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1%;
+  border-radius: 16px;
+  flex-direction: column;
+  height: 70%;
+  width: 60%;
+}
 .titleContainer {
   display: flex;
   align-items: center;
@@ -127,6 +147,31 @@
   background: #121212;
   border-radius: 16px;
   flex-direction: column;
+}
+.createBookContainer{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 95%;
+}
+.imageBookContainer{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 70%;
+  height: 100%;
+  margin: 10px;
+  margin-top: 36px;
+  border-radius: 16px;
+}
+
+.imageBookContainerImage {
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+  object-fit: cover;
+  max-width: 80%; 
 }
 .tableContainer {
   display: flex;
