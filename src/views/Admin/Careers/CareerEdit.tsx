@@ -28,7 +28,7 @@ function CareerEdit() {
   const auth = localStorage.getItem("auth");
   const navigate = useNavigate();
   interface Career {
-    id?: number;
+    code?: number;
     name?: string;
    
   }
@@ -36,7 +36,7 @@ function CareerEdit() {
   const { careerId } = useParams();
   const [career, setCareer] = useState<Career>();
   const [formErrors, setFormErrors] = useState({
-    id: "",
+    code: "",
     name: ""
   });
   const theme = createTheme({

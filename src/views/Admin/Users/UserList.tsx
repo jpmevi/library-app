@@ -71,7 +71,7 @@ function UserList() {
     },
     {
       icon: <EditIcon />,
-      onClick: (userId: string) => navigate(`/users-edit/${userId}`), // Modificado para incluir userId en la URL
+      onClick: (userId: string) => navigate(`/users-update/${userId}`), // Modificado para incluir userId en la URL
     },
   ];
   const [history, setHistory] = useState<User[]>([]);

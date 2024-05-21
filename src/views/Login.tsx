@@ -25,6 +25,7 @@ function Copyright(props: any) {
 }
 
 export default function SignIn() {
+  localStorage.setItem("auth", "");
   const [loginError, setLoginError] = React.useState(false);
   const navigate = useNavigate();
 
@@ -53,7 +54,7 @@ export default function SignIn() {
         if (dataJson.role === "ROLE_ADMINISTRATOR") {
           navigate("/dashboard-admin");
         } else {
-          navigate("/dashboard-user");
+          navigate("/dashboard-student");
         }
         // La solicitud fue exitosa, puedes redirigir a la página deseada
       } else {

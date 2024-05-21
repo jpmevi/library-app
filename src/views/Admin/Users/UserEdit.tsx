@@ -36,7 +36,7 @@ function UserEdit() {
     password?: string;
   }
   interface Career {
-    id: number;
+    code: string;
     name: string;
   }
 
@@ -226,11 +226,6 @@ function UserEdit() {
       errors["careerId"] = "Career is required.";
     }
 
-    if (!user?.birthDate) {
-      formIsValid = false;
-      errors["birthDate"] = "Birth date is required.";
-    }
-
     if (!role) {
       formIsValid = false;
       errors["role"] = "Role is required.";
@@ -418,7 +413,7 @@ function UserEdit() {
                         }}
                       >
                         {career.map((careerItem) => (
-                          <MenuItem value={careerItem.id}>
+                          <MenuItem value={careerItem.code}>
                             {careerItem.name}
                           </MenuItem>
                         ))}

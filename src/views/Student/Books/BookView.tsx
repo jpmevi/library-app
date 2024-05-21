@@ -9,6 +9,7 @@ import {
   Button,
   Container,
   Grid,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
@@ -18,13 +19,17 @@ import {
   createTheme,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
+import { red } from "@mui/material/colors";
+import ResponsiveDrawerStudent from "../../../components/SidebarStudent";
 
-function BookCreate() {
+function BookView() {
   const auth = localStorage.getItem("auth");
+  const username = localStorage.getItem("username");
   const navigate = useNavigate();
   interface Book {
     isbnCode?: string;
@@ -33,18 +38,17 @@ function BookCreate() {
     publicationDate?: string;
     publisher?: string;
     availableCopies?: number;
-    timesBorrowed?:number,
-    imgUrl?: string,
-  };
+    timesBorrowed?: number;
+    imgSrc?: string;
+  }
   interface Career {
     id: number;
     name: string;
   }
 
+  const { bookId } = useParams();
   const [book, setBook] = useState<Book>();
-  const [career, setCareer] = useState<Career[]>([]);
   const [image, setImage] = useState<string | undefined>("");
-  const [role, setRole] = useState<string | undefined>("");
   const [formErrors, setFormErrors] = useState({
     isbnCode: "",
     author: "",
@@ -52,7 +56,7 @@ function BookCreate() {
     publicationDate: "",
     publisher: "",
     availableCopies: "",
-    imgUrl: ""
+    imgSrc: "",
   });
   const theme = createTheme({
     components: {
@@ -70,7 +74,42 @@ function BookCreate() {
   });
 
   useEffect(() => {
-    
+    const fetchBook = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/v1/books/${bookId}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + auth,
+            },
+          }
+        );
+        const data = await response.json();
+        if (data.statusCode === 500) {
+          toast.error(data.message);
+          setTimeout(() => {
+            navigate("/");
+          }, 2000);
+        }
+        if (!response.ok) {
+          toast.error(data.message);
+          setTimeout(() => {
+            navigate("/");
+          }, 2000);
+        }
+        console.log(data);
+        setBook(data.data);
+      } catch (error) {
+        toast.error("Error al procesar la solicitud:");
+        console.error("Error al procesar la solicitud:", error);
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
+      }
+    };
+    fetchBook();
   }, []);
 
   const handleChangeDate = (newValue: dayjs.Dayjs | null) => {
@@ -88,28 +127,24 @@ function BookCreate() {
     const { value } = event.target;
     setBook((prev) => ({
       ...prev,
-      imgUrl: value,
+      imgSrc: value,
     }));
     setImage(value);
   };
   const handleSubmit = async (event: any) => {
     event.preventDefault();
-    if (!validateForm()) {
-      toast.error("Please fill in all required fields.");
-      return;
-    }
 
     // Si la validación es exitosa, procede con la petición fetch u otra lógica
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/books`,
+        `http://localhost:8080/api/v1/reservations`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${auth}`,
           },
-          body: JSON.stringify(book),
+          body: JSON.stringify({userId: username, bookId: bookId}),
         }
       );
       console.log(response);
@@ -125,10 +160,7 @@ function BookCreate() {
           toast.error(dataJson.message);
         }
       } else {
-        toast.success("libro creado exitosamente");
-        setTimeout(() => {
-          navigate("/dashboard-admin");
-        }, 2000);
+        toast.success("Reservation successfuly created");
       }
     } catch (error) {
       toast.error("Error al procesar la solicitud:");
@@ -158,11 +190,20 @@ function BookCreate() {
       errors["author"] = "Author is required.";
     }
 
+    if (!book?.publicationDate) {
+      formIsValid = false;
+      errors["publicationDate"] = "Publication Date is required.";
+    }
+
     if (!book?.availableCopies) {
       formIsValid = false;
       errors["availableCopies"] = "Available Copies is required.";
     }
-    
+
+    if (!book?.publisher) {
+      formIsValid = false;
+      errors["publisher"] = "Publisher is required.";
+    }
 
     setFormErrors(errors);
     return formIsValid;
@@ -183,9 +224,8 @@ function BookCreate() {
             draggable
             pauseOnHover
           />
-          <ResponsiveDrawer />
+          <ResponsiveDrawerStudent />
           <div className="bookPageContainer">
-            <h1 className="titleContainer">CREATE BOOK</h1>
             <div className="createBookContainer">
               <Box
                 sx={{
@@ -207,10 +247,8 @@ function BookCreate() {
                       alt={`image`}
                       src={
                         image
-                        ? 
-                        image
-                        :
-                        "https://islandpress.org/files/default_book_cover_2015.jpg"
+                          ? image
+                          : "https://islandpress.org/files/default_book_cover_2015.jpg"
                       }
                     />
                   </div>
@@ -230,20 +268,19 @@ function BookCreate() {
                       variant="h5"
                       fontWeight="bold"
                     >
-                      CUNOC LIBRARY
+                      VIEW BOOK
                     </Typography>
-
-                    <Avatar sx={{ m: 1, bgcolor: "#BAF266" }}>
-                      <EditIcon sx={{ color: "black" }} />
-                    </Avatar>
                     <Box
                       component="form"
                       onSubmit={handleSubmit}
                       noValidate
                       sx={{ mt: 1, width: "100%", maxWidth: "100%" }}
                     >
+                      <InputLabel sx={{ color: "white" }} id="isbnCode">
+                        ISBN Code
+                      </InputLabel>
                       <TextField
-                        label="ISBN Code"
+                        disabled= {true}
                         error={!!formErrors.isbnCode}
                         helperText={formErrors.isbnCode}
                         margin="normal"
@@ -252,10 +289,25 @@ function BookCreate() {
                         id="isbnCode"
                         name="isbnCode"
                         autoComplete="isbnCode"
-                        autoFocus
                         onChange={handleChange}
+                        value={book?.isbnCode}
                         sx={{
-                          marginTop: 0,
+                          "& .MuiInputBase-input.Mui-disabled": {
+                            WebkitTextFillColor: "white",
+                          },
+                          "& .MuiOutlinedInput-root": {
+                            "&.Mui-disabled": {
+                              color: "#dadada",
+                              "& .MuiOutlinedInput-notchedOutline": {
+                                borderColor: "#BAF266",
+                              },
+                            },
+                          },
+                          "& .MuiInputLabel-root": {
+                            "&.Mui-disabled": {
+                              color: "white !important",
+                            },
+                          },
                           "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":
                             {
                               borderColor: "#BAF266",
@@ -265,22 +317,49 @@ function BookCreate() {
                               borderColor: "white",
                             },
                         }}
-                        InputProps={{ style: { color: "white" } }}
-                        InputLabelProps={{ style: { color: "white" } }}
+                        InputProps={{
+                          style: {
+                            color: "white !important",
+                            borderColor: "white",
+                          }, // Direct inline styles
+                          disableUnderline: true, // Optional: disable the underline
+                        }}
+                        InputLabelProps={{
+                          style: { color: "white" },
+                        }}
                       />
+                      <InputLabel sx={{ color: "white" }} id="author">
+                        Author
+                      </InputLabel>
                       <TextField
+                        disabled = {true}
                         error={!!formErrors.author}
                         helperText={formErrors.author}
                         margin="normal"
                         required
                         fullWidth
-                        label="Author"
                         name="author"
                         id="author"
+                        value={book?.author}
                         autoComplete="author"
                         onChange={handleChange}
                         sx={{
-                          marginTop: 0,
+                          "& .MuiInputBase-input.Mui-disabled": {
+                            WebkitTextFillColor: "white",
+                          },
+                          "& .MuiOutlinedInput-root": {
+                            "&.Mui-disabled": {
+                              color: "#dadada",
+                              "& .MuiOutlinedInput-notchedOutline": {
+                                borderColor: "#BAF266",
+                              },
+                            },
+                          },
+                          "& .MuiInputLabel-root": {
+                            "&.Mui-disabled": {
+                              color: "white !important",
+                            },
+                          },
                           "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":
                             {
                               borderColor: "#BAF266",
@@ -290,11 +369,23 @@ function BookCreate() {
                               borderColor: "white",
                             },
                         }}
-                        InputProps={{ style: { color: "white" } }}
-                        InputLabelProps={{ style: { color: "white" } }}
+                        InputProps={{
+                          style: {
+                            color: "white !important",
+                            borderColor: "white",
+                          }, // Direct inline styles
+                          disableUnderline: true, // Optional: disable the underline
+                        }}
+                        InputLabelProps={{
+                          style: { color: "white" },
+                        }}
                       />
-                       <TextField
-                        label="Title"
+                      <InputLabel sx={{ color: "white" }} id="title">
+                        Title
+                      </InputLabel>
+                      <TextField
+                      disabled={true}
+                        value={book?.title}
                         error={!!formErrors.title}
                         helperText={formErrors.title}
                         margin="normal"
@@ -305,7 +396,22 @@ function BookCreate() {
                         autoComplete="title"
                         onChange={handleChange}
                         sx={{
-                          marginTop: 0,
+                          "& .MuiInputBase-input.Mui-disabled": {
+                            WebkitTextFillColor: "white",
+                          },
+                          "& .MuiOutlinedInput-root": {
+                            "&.Mui-disabled": {
+                              color: "#dadada",
+                              "& .MuiOutlinedInput-notchedOutline": {
+                                borderColor: "#BAF266",
+                              },
+                            },
+                          },
+                          "& .MuiInputLabel-root": {
+                            "&.Mui-disabled": {
+                              color: "white !important",
+                            },
+                          },
                           "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":
                             {
                               borderColor: "#BAF266",
@@ -315,17 +421,40 @@ function BookCreate() {
                               borderColor: "white",
                             },
                         }}
-                        InputProps={{ style: { color: "white" } }}
-                        InputLabelProps={{ style: { color: "white" } }}
+                        InputProps={{
+                          style: {
+                            color: "white !important",
+                            borderColor: "white",
+                          }, // Direct inline styles
+                          disableUnderline: true, // Optional: disable the underline
+                        }}
+                        InputLabelProps={{
+                          style: { color: "white" },
+                        }}
                       />
                       <DatePicker
+                        disabled={true}
+                        value={dayjs(book?.publicationDate)}
                         label="Publication Date"
                         name="publicationDate"
                         onChange={handleChangeDate}
                         sx={{
-                          marginTop: 0,
-                          marginBottom: 1,
-                          width: "100%",
+                          "& .MuiInputBase-input.Mui-disabled": {
+                            WebkitTextFillColor: "white",
+                          },
+                          "& .MuiOutlinedInput-root": {
+                            "&.Mui-disabled": {
+                              color: "#dadada",
+                              "& .MuiOutlinedInput-notchedOutline": {
+                                borderColor: "#BAF266",
+                              },
+                            },
+                          },
+                          "& .MuiInputLabel-root": {
+                            "&.Mui-disabled": {
+                              color: "white !important",
+                            },
+                          },
                           "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":
                             {
                               borderColor: "#BAF266",
@@ -335,21 +464,39 @@ function BookCreate() {
                               borderColor: "white",
                             },
                         }}
-                       
                       />
+                      <InputLabel sx={{ color: "white" }} id="publisher">
+                        Publisher
+                      </InputLabel>
                       <TextField
+                      disabled={true}
+                        value={book?.publisher}
                         error={!!formErrors.publisher}
                         helperText={formErrors.publisher}
                         margin="normal"
                         fullWidth
                         name="publisher"
-                        label="Publisher"
                         type="publisher"
                         id="publisher"
                         autoComplete="publisher"
                         onChange={handleChange}
                         sx={{
-                          marginTop: 0,
+                          "& .MuiInputBase-input.Mui-disabled": {
+                            WebkitTextFillColor: "white",
+                          },
+                          "& .MuiOutlinedInput-root": {
+                            "&.Mui-disabled": {
+                              color: "#dadada",
+                              "& .MuiOutlinedInput-notchedOutline": {
+                                borderColor: "#BAF266",
+                              },
+                            },
+                          },
+                          "& .MuiInputLabel-root": {
+                            "&.Mui-disabled": {
+                              color: "white !important",
+                            },
+                          },
                           "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":
                             {
                               borderColor: "#BAF266",
@@ -359,22 +506,49 @@ function BookCreate() {
                               borderColor: "white",
                             },
                         }}
-                        InputProps={{ style: { color: "white" } }}
-                        InputLabelProps={{ style: { color: "white" } }}
+                        InputProps={{
+                          style: {
+                            color: "white !important",
+                            borderColor: "white",
+                          }, // Direct inline styles
+                          disableUnderline: true, // Optional: disable the underline
+                        }}
+                        InputLabelProps={{
+                          style: { color: "white" },
+                        }}
                       />
+                      <InputLabel sx={{ color: "white" }} id="availableCopies">
+                        Available Copies
+                      </InputLabel>
                       <TextField
+                      disabled={true}
+                        value={book?.availableCopies}
                         error={!!formErrors.availableCopies}
                         helperText={formErrors.availableCopies}
                         margin="normal"
                         fullWidth
                         name="availableCopies"
-                        label="Available Copies"
                         type="number"
                         id="availableCopies"
                         autoComplete="availableCopies"
                         onChange={handleChange}
                         sx={{
-                          marginTop: 0,
+                          "& .MuiInputBase-input.Mui-disabled": {
+                            WebkitTextFillColor: "white",
+                          },
+                          "& .MuiOutlinedInput-root": {
+                            "&.Mui-disabled": {
+                              color: "#dadada",
+                              "& .MuiOutlinedInput-notchedOutline": {
+                                borderColor: "#BAF266",
+                              },
+                            },
+                          },
+                          "& .MuiInputLabel-root": {
+                            "&.Mui-disabled": {
+                              color: "white !important",
+                            },
+                          },
                           "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":
                             {
                               borderColor: "#BAF266",
@@ -384,19 +558,46 @@ function BookCreate() {
                               borderColor: "white",
                             },
                         }}
-                        InputProps={{ style: { color: "white" } }}
-                        InputLabelProps={{ style: { color: "white" } }}
+                        InputProps={{
+                          style: {
+                            color: "white !important",
+                            borderColor: "white",
+                          }, // Direct inline styles
+                          disableUnderline: true, // Optional: disable the underline
+                        }}
+                        InputLabelProps={{
+                          style: { color: "white" },
+                        }}
                       />
+                      <InputLabel sx={{ color: "white" }} id="imgSrc">
+                        Img Url
+                      </InputLabel>
                       <TextField
+                        disabled={true}
+                        value={book?.imgSrc}
                         margin="normal"
                         fullWidth
-                        name="imgUrl"
-                        label="Image Url"
-                        id="imgUrl"
-                        autoComplete="imgUrl"
+                        name="imgSrc"
+                        id="imgSrc"
+                        autoComplete="imgSrc"
                         onChange={handleChangeImage}
                         sx={{
-                          marginTop: 0,
+                          "& .MuiInputBase-input.Mui-disabled": {
+                            WebkitTextFillColor: "white",
+                          },
+                          "& .MuiOutlinedInput-root": {
+                            "&.Mui-disabled": {
+                              color: "#dadada",
+                              "& .MuiOutlinedInput-notchedOutline": {
+                                borderColor: "#BAF266",
+                              },
+                            },
+                          },
+                          "& .MuiInputLabel-root": {
+                            "&.Mui-disabled": {
+                              color: "white !important",
+                            },
+                          },
                           "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":
                             {
                               borderColor: "#BAF266",
@@ -406,8 +607,16 @@ function BookCreate() {
                               borderColor: "white",
                             },
                         }}
-                        InputProps={{ style: { color: "white" } }}
-                        InputLabelProps={{ style: { color: "white" } }}
+                        InputProps={{
+                          style: {
+                            color: "white !important",
+                            borderColor: "white",
+                          }, // Direct inline styles
+                          disableUnderline: true, // Optional: disable the underline
+                        }}
+                        InputLabelProps={{
+                          style: { color: "white" },
+                        }}
                       />
                       <Button
                         className="button"
@@ -424,7 +633,7 @@ function BookCreate() {
                           },
                         }}
                       >
-                        Create
+                        Create Reservation
                       </Button>
                     </Box>
                   </Box>
@@ -438,4 +647,4 @@ function BookCreate() {
   );
 }
 
-export default BookCreate;
+export default BookView;

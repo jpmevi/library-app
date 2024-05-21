@@ -13,57 +13,33 @@ import EditIcon from "@mui/icons-material/Edit";
 import { ToastContainer, toast } from "react-toastify";
 import SearchIcon from "@mui/icons-material/Search";
 import "react-toastify/dist/ReactToastify.css";
+import ResponsiveDrawerStudent from "../../../components/SidebarStudent";
 
-function CareerList() {
+function ReservationsList() {
+  const username = localStorage.getItem("username");
   const columns: Column[] = [
-    { id: "code", label: "Code", minWidth: 100, align: "center" },
-    { id: "name", label: "Name", minWidth: 100, align: "center" },
+    { id: "id", label: "id", minWidth: 100, align: "center" },
+    { id: "bookId", label: "Book Id", minWidth: 100, align: "center" },
+    { id: "userId", label: "User Id", minWidth: 100, align: "center" },
+    { id: "isActive", label: "Is Active", minWidth: 100, align: "center" },
+    { id: "reservationDate", label: "Reservation Date", minWidth: 100, align: "center" },
+    { id: "expirationDate", label: "Expiration Date", minWidth: 100, align: "center" },
   ];
   const careername = localStorage.getItem("careername");
   const auth = localStorage.getItem("auth");
   const accountNumber = localStorage.getItem("accountNumber");
   const navigate = useNavigate();
-  interface Career {
-    code: string;
-    name: string;
+  interface Reservation {
+    bookId: number;
+    expirationDate: string;
+    id: number,
+    isActive: string;
+    reservationDate: string;
+    userId: string;
   }
-  const handleDelete = async (careerId: string) => {
-    try {
-      const response = await fetch(
-        `http://localhost:8080/api/v1/careers/${careerId}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${auth}`,
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Error al eliminar el usuario");
-      }
-      const data = await response.json();
-      // Filtrar el usuario eliminado del estado local
-      setCareers(careers.filter((career) => career.code !== careerId));
-      toast.success(`Career ${careerId} succesfully deleted`);
-    } catch (error) {
-      console.error("Error to eliminate career:", error);
-      toast.error("Error  to eliminate career: " + error);
-      navigate("/");
-    }
-  };
+"student"
 
-  const actions = [
-    {
-      icon: <DeleteIcon />,
-      onClick: handleDelete, // Referencia directa a la función
-    },
-    {
-      icon: <EditIcon />,
-      onClick: (careerId: string) => navigate(`/career-update/${careerId}`), // Modificado para incluir careerId en la URL
-    },
-  ];
-  const [careers, setCareers] = useState<Career[]>([]);
+  const [careers, setCareers] = useState<Reservation[]>([]);
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState("");
   const [totalPages, setTotalPages] = useState(10);
@@ -77,10 +53,8 @@ function CareerList() {
     const fetchComments = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8080/api/v1/careers?page=" +
-            page +
-            "&careerName=" +
-            search,
+          "http://localhost:8080/api/v1/reservations/"+username+"?page=" +
+            page,
           {
             method: "GET",
             headers: {
@@ -94,7 +68,7 @@ function CareerList() {
           navigate("/login");
         }
         if (!response.ok) {
-          throw new Error("Error to fetch careers");
+          throw new Error("Error to fetch resrevations");
         }
         console.log(data);
         setCareers(data.data);
@@ -121,25 +95,9 @@ function CareerList() {
         draggable
         pauseOnHover
       />
-      <ResponsiveDrawer />
+      <ResponsiveDrawerStudent />
       <div className="listCareersContainer">
-        <h1 className="titleContainer">CAREERS LIST</h1>
-        <div className="search-container">
-          <InputBase
-            className="search-input"
-            placeholder="Search CareerId"
-            inputProps={{ "aria-label": "search careerName" }}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <IconButton
-            className="search-button"
-            type="button"
-            sx={{ p: "10px" }}
-            aria-label="search"
-          >
-            <SearchIcon />
-          </IconButton>
-        </div>
+        <h1 className="titleContainer">RESERVATIONS LIST</h1>
 
           <div className="tableContainer">
             <StickyHeadTable
@@ -148,7 +106,6 @@ function CareerList() {
               page={page}
               totalPages={totalPages}
               handleChangePage={handleChangePage}
-              actions={actions}
             />
           </div>
 
@@ -157,4 +114,4 @@ function CareerList() {
   );
 }
 
-export default CareerList;
+export default ReservationsList;

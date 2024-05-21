@@ -25,20 +25,28 @@ import ReportBookOutOfCopies from "./views/Admin/Reports/ReportBookOutOfCopies.t
 import ReportReverBorrowedBooks from "./views/Admin/Reports/ReportReverBorrowedBooks.tsx";
 import ReportSanctionedStudents from "./views/Admin/Reports/ReportSanctionedStudents.tsx";
 import ReportMostBorrowingStudent from "./views/Admin/Reports/ReportMostBorrowingStudent.tsx";
+import AppStudent from "./views/AppStudent.tsx";
+import BookView from "./views/Student/Books/BookView.tsx";
+import ReservationsList from "./views/Student/Reservations/ReservationsList.tsx";
+import CurrentLoans from "./views/Student/Loans/CurrentLoans.tsx";
+import HistoryLoans from "./views/Student/Loans/HistoryLoans.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<SignIn />} />
       <Route path="/dashboard-admin" element={<App />} />
+      <Route path="/dashboard-student" element={<AppStudent />} />
       <Route path="/career-list" element={<CareerList />} />
       <Route path="/career-create" element={<CareerCreate />} />
       <Route path="/career-update/:careerId" element={<CareerEdit />} />
       <Route path="/user-list" element={<UserList />} />
       <Route path="/user-create" element={<UserCreate />} />
+      <Route path="/reservations" element={<ReservationsList />} />
       <Route path="/users-update/:userId" element={<UserEdit />} />
       <Route path="/file-upload" element={<FileUpload />} />
       <Route path="/book-create" element={<BookCreate />} />
+      <Route path="/book-view/:bookId" element={<BookView />} />
       <Route path="/book-update/:bookId" element={<BookEdit />} />
       <Route path="/book-search" element={<SearchBook />} />
       <Route path="/return-book" element={<ReturnBook />} />
@@ -52,6 +60,8 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <Route path="/report-books-never-borrowed" element={<ReportReverBorrowedBooks />}/>
       <Route path="/report-sanctioned-students" element={<ReportSanctionedStudents />}/>
       <Route path="/report-most-borrowing-student" element={<ReportMostBorrowingStudent />}/>
+      <Route path="/student-loans" element={<CurrentLoans />}/>
+      <Route path="/history-loans" element={<HistoryLoans />}/>
     </Routes>
   </BrowserRouter>
 );

@@ -37,7 +37,7 @@ function BookEdit() {
     publisher?: string;
     availableCopies?: number;
     timesBorrowed?: number;
-    imgSrc?: string;
+    imgUrl?: string;
   }
   interface Career {
     id: number;
@@ -54,7 +54,7 @@ function BookEdit() {
     publicationDate: "",
     publisher: "",
     availableCopies: "",
-    imgSrc: "",
+    imgUrl: "",
   });
   const theme = createTheme({
     components: {
@@ -99,6 +99,7 @@ function BookEdit() {
         }
         console.log(data);
         setBook(data.data);
+        setImage(data.data.imgUrl);
       } catch (error) {
         toast.error("Error al procesar la solicitud:");
         console.error("Error al procesar la solicitud:", error);
@@ -153,7 +154,7 @@ function BookEdit() {
     const { value } = event.target;
     setBook((prev) => ({
       ...prev,
-      imgSrc: value,
+      imgUrl: value,
     }));
     setImage(value);
   };
@@ -192,7 +193,7 @@ function BookEdit() {
       } else {
         toast.success("Book successfuly updated");
         setTimeout(() => {
-          navigate("/admin-dashboard");
+          navigate("/dashboard-admin");
         }, 2000);
       }
     } catch (error) {
@@ -223,20 +224,11 @@ function BookEdit() {
       errors["author"] = "Author is required.";
     }
 
-    if (!book?.publicationDate) {
-      formIsValid = false;
-      errors["publicationDate"] = "Publication Date is required.";
-    }
-
     if (!book?.availableCopies) {
       formIsValid = false;
       errors["availableCopies"] = "Available Copies is required.";
     }
 
-    if (!book?.publisher) {
-      formIsValid = false;
-      errors["publisher"] = "Publisher is required.";
-    }
 
     setFormErrors(errors);
     return formIsValid;
@@ -482,16 +474,16 @@ function BookEdit() {
                         InputProps={{ style: { color: "white" } }}
                         InputLabelProps={{ style: { color: "white" } }}
                       />
-                      <InputLabel sx={{ color: "white" }} id="imgSrc">
+                      <InputLabel sx={{ color: "white" }} id="imgUrl">
                         Img Url
                       </InputLabel>
                       <TextField
-                        value={book?.imgSrc}
+                        value={book?.imgUrl}
                         margin="normal"
                         fullWidth
-                        name="imgSrc"
-                        id="imgSrc"
-                        autoComplete="imgSrc"
+                        name="imgUrl"
+                        id="imgUrl"
+                        autoComplete="imgUrl"
                         onChange={handleChangeImage}
                         sx={{
                           marginTop: 0,

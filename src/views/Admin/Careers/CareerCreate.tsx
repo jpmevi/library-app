@@ -28,11 +28,13 @@ function CareerCreate() {
   const auth = localStorage.getItem("auth");
   const navigate = useNavigate();
   interface Career {
+    code?: string;
     name?: string;
   }
 
   const [career, setCareer] = useState<Career>();
   const [formErrors, setFormErrors] = useState({
+    code: "",
     name: "",
   });
   const theme = createTheme({
@@ -139,6 +141,11 @@ function CareerCreate() {
     let errors: any = {};
     let formIsValid = true;
 
+    if (!career?.code) {
+      formIsValid = false;
+      errors["code"] = "Code is required.";
+
+    }
 
     if (!career?.name) {
       formIsValid = false;
@@ -212,6 +219,35 @@ function CareerCreate() {
                       noValidate
                       sx={{ mt: 1 }}
                     >
+                      <InputLabel
+                        sx={{ color: "white" }}
+                        id="code"
+                      >
+                        Code
+                      </InputLabel>
+                      <TextField
+                        error={!!formErrors.code}
+                        helperText={formErrors.code}
+                        margin="none"
+                        required
+                        fullWidth
+                        name="code"
+                        id="code"
+                        autoComplete="code"
+                        onChange={handleChange}
+                        sx={{
+                          "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":
+                            {
+                              borderColor: "#BAF266",
+                            },
+                          "&:hover .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":
+                            {
+                              borderColor: "white",
+                            },
+                        }}
+                        InputProps={{ style: { color: "white" } }}
+                        InputLabelProps={{ style: { color: "white" } }}
+                      />
                       <InputLabel
                         sx={{ color: "white" }}
                         id="name"

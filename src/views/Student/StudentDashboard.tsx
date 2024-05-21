@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 
-export default function AdminDashbaord() {
+export default function StudentDashbaord() {
   const theme = createTheme({
     palette: {
       secondary: {
@@ -32,7 +32,7 @@ export default function AdminDashbaord() {
     publisher: string;
     availableCopies: number;
     timesBorrowed:number,
-    imgUrl: string,
+    imgSrc: string,
   };
   
   const [books, setBooks] = useState<Book[]>([]);
@@ -45,9 +45,9 @@ export default function AdminDashbaord() {
     setPage(newPage - 1);
     console.log(page);
   };
-  function Book({ title, imgUrl,id }: { title: string; imgUrl: string, id:number }) {
+  function Book({ title, imgSrc,id }: { title: string; imgSrc: string, id:number }) {
     return (
-      <Link to={`/book-update/${id}`} className="book">
+      <Link to={`/book-view/${id}`} className="book">
       <div className="book">
         <h5 className="bookTitle">
           {title}
@@ -55,7 +55,7 @@ export default function AdminDashbaord() {
       <div className="bookImageContainer">
         <img className="bookImage"
           alt={`image of ${title}`}
-          src={imgUrl}
+          src={imgSrc}
         />
         </div>
       </div>
@@ -128,8 +128,8 @@ export default function AdminDashbaord() {
                 .trim()
                 .includes("".toLowerCase().trim())
             )
-            .map(({ id, title, imgUrl }) => (
-              <Book key={id} title={title} imgUrl={imgUrl ? imgUrl : "https://islandpress.org/files/default_book_cover_2015.jpg"} id={id}/>
+            .map(({ id, title, imgSrc }) => (
+              <Book key={id} title={title} imgSrc={imgSrc ? imgSrc : "https://islandpress.org/files/default_book_cover_2015.jpg"} id={id}/>
             ))}
         </div>
       </div>
