@@ -40,13 +40,15 @@ function ReportTotalCollected() {
     returnDate: string;
     studentId: number;
   }
-
   const [careers, setCareers] = useState<Career[]>([]);
   const [startDate, setStartDate] = useState<string>(new Date().toJSON().slice(0,10));
   const [endDate, setEndDate] = useState<string>(new Date().toJSON().slice(0,10));
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState("");
   const [totalPages, setTotalPages] = useState(10);
+  const [totalArrears, setTotalArrears] = useState(0);
+  const [totalFine, setTotalFine] = useState(0);
+  const [totalNormal, setTotalNormal] = useState(0);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage - 1);
@@ -63,7 +65,7 @@ function ReportTotalCollected() {
     const fetchComments = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8080/api/v1/reports/total-collected?startDate="+(startDate.slice(0,10))+"&endDate="+endDate.slice(0,10)+"&page="+page,
+          "http://54.196.99.149:8085/api/v1/reports/total-collected?startDate="+(startDate.slice(0,10))+"&endDate="+endDate.slice(0,10)+"&page="+page,
           {
             method: "GET",
             headers: {
@@ -80,7 +82,13 @@ function ReportTotalCollected() {
           throw new Error("Error to fetch report");
         }
         console.log(data);
-        setCareers(data.data.loans);
+        const loans = data?.data?.loans ?? [];
+        if(loans){  
+          setTotalArrears(data?.data?.totalArrears);
+          setTotalFine(data?.data?.totalFine);
+          setTotalNormal(data?.data?.totalNormal);
+        }
+        setCareers(loans);
         setTotalPages(data.totalPages);
       } catch (error) {
         navigate("/");
@@ -108,6 +116,8 @@ function ReportTotalCollected() {
       <ResponsiveDrawer />
       <div className="listCareersContainer">
         <h1 className="titleContainer">TOTAL MONEY COLLECTED</h1>
+        <h3>Total Arrears: {totalArrears}, Total Fine: {totalFine}, Total Normal: {totalNormal}</h3>
+        <h4>Total Collected: {totalArrears+totalFine+totalNormal}</h4>
         <div className="startDate-container">
            <DatePicker
                         label="Start Date"

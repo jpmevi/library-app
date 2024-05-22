@@ -41,7 +41,7 @@ function UserList() {
   const handleDelete = async (userId: string) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/users/${userId}`,
+        `http://54.196.99.149:8085/api/v1/users/${userId}`,
         {
           method: "DELETE",
           headers: {
@@ -88,7 +88,7 @@ function UserList() {
     const fetchComments = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8080/api/v1/users?page=" +
+          "http://54.196.99.149:8085/api/v1/users?page=" +
             page +
             "&userId=" +
             search,

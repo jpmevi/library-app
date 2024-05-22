@@ -49,7 +49,7 @@ export default function ResponsiveDrawerStudent(props: Props) {
 
   const handleDelete = async (id: number) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/notifications/${id}/read`, {
+      const response = await fetch(`http://54.196.99.149:8085/api/v1/notifications/${id}/read`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -69,7 +69,7 @@ export default function ResponsiveDrawerStudent(props: Props) {
   useEffect(() => {
     const fetchNotifications = async () => {
       const response = await fetch(
-        `http://localhost:8080/api/v1/notifications/${username}`,
+        `http://54.196.99.149:8085/api/v1/notifications/${username}`,
         {
           method: "GET",
           headers: {

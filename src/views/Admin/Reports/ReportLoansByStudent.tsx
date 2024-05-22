@@ -64,7 +64,7 @@ function ReportLoansByStudent() {
     const fetchComments = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8080/api/v1/reports/current-loans-by-student?userId=" +
+          "http://54.196.99.149:8085/api/v1/reports/current-loans-by-student?userId=" +
             search +
             "&page=" +
             page,
@@ -112,24 +112,14 @@ function ReportLoansByStudent() {
         <ResponsiveDrawer />
         <div className="listCareersContainer">
           <h1 className="titleContainer">LOANS BY STUDENT</h1>
-          <div className="startDate-container">
-            <div className="search-container">
+          <div className="search-container">
               <InputBase
                 className="search-input"
-                placeholder="Search Student ID"
-                inputProps={{ "aria-label": "Search Student ID" }}
+                placeholder="Enter User Id"
+                inputProps={{ "aria-label": "enter user id" }}
                 onChange={(e) => setSearch(e.target.value)}
               />
-              <IconButton
-                className="search-button"
-                type="button"
-                sx={{ p: "10px" }}
-                aria-label="search"
-              >
-                <SearchIcon />
-              </IconButton>
             </div>
-          </div>
 
           <div className="tableContainer">
             <StickyHeadTable

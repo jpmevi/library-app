@@ -71,7 +71,7 @@ function UserCreate() {
     const fetchCareer = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8080/api/v1/careers?size=" + 1000,
+          "http://54.196.99.149:8085/api/v1/careers?size=" + 1000,
           {
             method: "GET",
             headers: {
@@ -129,7 +129,7 @@ function UserCreate() {
     // Si la validación es exitosa, procede con la petición fetch u otra lógica
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/auth/register`,
+        `http://54.196.99.149:8085/api/v1/auth/register`,
         {
           method: "POST",
           headers: {
@@ -146,7 +146,7 @@ function UserCreate() {
         if (dataJson.httpCode == 400 && dataJson.errors) {
           Object.entries(dataJson.errors).forEach(([field, message]) => {
             console.log(`${field}: ${message}`);
-            toast.error(`${message}`);
+            toast.error(`${field}: ${message}`);
           });
         } else if (dataJson.httpCode != 200) {
           toast.error(dataJson.message);

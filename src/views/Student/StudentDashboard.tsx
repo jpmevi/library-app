@@ -66,7 +66,7 @@ export default function StudentDashbaord() {
     const fetchBooks = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8080/api/v1/books?page=" +
+          "http://54.196.99.149:8085/api/v1/books?page=" +
             page +"&name="+search,
           {
             method: "GET",

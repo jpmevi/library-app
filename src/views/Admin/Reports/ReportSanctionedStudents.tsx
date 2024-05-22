@@ -51,7 +51,7 @@ function ReportSanctionedStudents() {
     const fetchComments = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8080/api/v1/reports/sanctioned-students"+"?page="+page,
+          "http://54.196.99.149:8085/api/v1/reports/sanctioned-students"+"?page="+page,
           {
             method: "GET",
             headers: {

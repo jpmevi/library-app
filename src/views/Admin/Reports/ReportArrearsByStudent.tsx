@@ -65,7 +65,7 @@ function ReportArrearsByStudent() {
     const fetchComments = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8080/api/v1/reports/arrears-by-student?startDate=" +
+          "http://54.196.99.149:8085/api/v1/reports/arrears-by-student?startDate=" +
             startDate.slice(0, 10) +
             "&endDate=" +
             endDate.slice(0, 10) +
@@ -117,23 +117,15 @@ function ReportArrearsByStudent() {
         <ResponsiveDrawer />
         <div className="listCareersContainer">
           <h1 className="titleContainer">ARREARS BY STUDENT</h1>
-          <div className="startDate-container">
-            <div className="search-container">
+          <div className="search-container">
               <InputBase
                 className="search-input"
-                placeholder="Search Book Name"
-                inputProps={{ "aria-label": "search book name" }}
+                placeholder="Enter User Id"
+                inputProps={{ "aria-label": "enter user id" }}
                 onChange={(e) => setSearch(e.target.value)}
               />
-              <IconButton
-                className="search-button"
-                type="button"
-                sx={{ p: "10px" }}
-                aria-label="search"
-              >
-                <SearchIcon />
-              </IconButton>
             </div>
+          <div className="startDate-container">
             <DatePicker
               label="Start Date"
               name="startDate"

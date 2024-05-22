@@ -52,7 +52,7 @@ function ReportLoanToday() {
     const fetchComments = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8080/api/v1/reports/loans-due-today?date="+(date.slice(0,10))+"&page="+page,
+          "http://54.196.99.149:8085/api/v1/reports/loans-due-today?date="+(date.slice(0,10))+"&page="+page,
           {
             method: "GET",
             headers: {

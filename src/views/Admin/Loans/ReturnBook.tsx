@@ -78,7 +78,7 @@ function ReturnBook() {
     if(isArrear){
       try {
             const response2 = await fetch(
-              "http://localhost:8080/api/v1/loans/payAndReturn/"+amount,
+              "http://54.196.99.149:8085/api/v1/loans/payAndReturn/"+amount,
               {
                 method: "POST",
                 headers: {
@@ -112,7 +112,7 @@ function ReturnBook() {
   
       try {
         const response = await fetch(
-          "http://localhost:8080/api/v1/loans/return",
+          "http://54.196.99.149:8085/api/v1/loans/return",
           {
             method: "POST",
             headers: {
@@ -133,7 +133,7 @@ function ReturnBook() {
             setAmount(dataJson.data.totalToPay);
           } else {
             const response2 = await fetch(
-              "http://localhost:8080/api/v1/loans/payAndReturn/"+dataJson.data.totalToPay,
+              "http://54.196.99.149:8085/api/v1/loans/payAndReturn/"+dataJson.data.totalToPay,
               {
                 method: "POST",
                 headers: {

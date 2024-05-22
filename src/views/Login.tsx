@@ -10,6 +10,7 @@ import MenuBookSharpIcon from "@mui/icons-material/MenuBookSharp";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
 
 function Copyright(props: any) {
   return (
@@ -34,7 +35,7 @@ export default function SignIn() {
     const data = new FormData(event.currentTarget as HTMLFormElement);
     const userId = data.get("userId") as string;
     try {
-      const response = await fetch("http://localhost:8080/api/v1/auth/login", {
+      const response = await fetch("http://54.196.99.149:8085/api/v1/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -58,6 +59,14 @@ export default function SignIn() {
         }
         // La solicitud fue exitosa, puedes redirigir a la página deseada
       } else {
+        if (dataJson.httpCode == 400 && dataJson.errors) {
+          Object.entries(dataJson.errors).forEach(([field, message]) => {
+            console.log(`${field}: ${message}`);
+            toast.error(`${field}: ${message}`);
+          });
+        } else if (dataJson.httpCode != 200) {
+          toast.error(dataJson.message);
+        }
         // La solicitud no fue exitosa, maneja el error o muestra un mensaje
       }
     } catch (error) {
@@ -68,6 +77,17 @@ export default function SignIn() {
 
   return (
     <div className="login">
+       <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
       <Box
         sx={{
           background: "#0D0D0D",

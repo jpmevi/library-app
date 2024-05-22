@@ -53,7 +53,7 @@ function ReportReverBorrowedBooks() {
     const fetchComments = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8080/api/v1/reports/never-borrowed-books"+"?page="+page,
+          "http://54.196.99.149:8085/api/v1/reports/never-borrowed-books"+"?page="+page,
           {
             method: "GET",
             headers: {

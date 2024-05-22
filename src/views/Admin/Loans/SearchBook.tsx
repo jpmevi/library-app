@@ -74,7 +74,7 @@ function SearchBook() {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/api/v1/books/isbnCodes", {
+      const response = await fetch("http://54.196.99.149:8085/api/v1/books/isbnCodes", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

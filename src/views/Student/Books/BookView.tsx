@@ -77,7 +77,7 @@ function BookView() {
     const fetchBook = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/v1/books/${bookId}`,
+          `http://54.196.99.149:8085/api/v1/books/${bookId}`,
           {
             method: "GET",
             headers: {
@@ -137,7 +137,7 @@ function BookView() {
     // Si la validación es exitosa, procede con la petición fetch u otra lógica
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/reservations`,
+        `http://54.196.99.149:8085/api/v1/reservations`,
         {
           method: "POST",
           headers: {
@@ -154,7 +154,7 @@ function BookView() {
         if (dataJson.httpCode == 400 && dataJson.errors) {
           Object.entries(dataJson.errors).forEach(([field, message]) => {
             console.log(`${field}: ${message}`);
-            toast.error(`${message}`);
+            toast.error(`${field}: ${message}`);
           });
         } else if (dataJson.httpCode != 200) {
           toast.error(dataJson.message);
@@ -283,7 +283,7 @@ function BookView() {
                         disabled= {true}
                         error={!!formErrors.isbnCode}
                         helperText={formErrors.isbnCode}
-                        margin="normal"
+                        margin="none"
                         required
                         fullWidth
                         id="isbnCode"
@@ -335,7 +335,7 @@ function BookView() {
                         disabled = {true}
                         error={!!formErrors.author}
                         helperText={formErrors.author}
-                        margin="normal"
+                        margin="none"
                         required
                         fullWidth
                         name="author"
@@ -388,7 +388,7 @@ function BookView() {
                         value={book?.title}
                         error={!!formErrors.title}
                         helperText={formErrors.title}
-                        margin="normal"
+                        margin="none"
                         required
                         fullWidth
                         name="title"
@@ -439,6 +439,8 @@ function BookView() {
                         name="publicationDate"
                         onChange={handleChangeDate}
                         sx={{
+                          marginTop: 1,
+                          marginBottom: 0,
                           "& .MuiInputBase-input.Mui-disabled": {
                             WebkitTextFillColor: "white",
                           },
@@ -473,7 +475,7 @@ function BookView() {
                         value={book?.publisher}
                         error={!!formErrors.publisher}
                         helperText={formErrors.publisher}
-                        margin="normal"
+                        margin="none"
                         fullWidth
                         name="publisher"
                         type="publisher"
@@ -525,7 +527,7 @@ function BookView() {
                         value={book?.availableCopies}
                         error={!!formErrors.availableCopies}
                         helperText={formErrors.availableCopies}
-                        margin="normal"
+                        margin="none"
                         fullWidth
                         name="availableCopies"
                         type="number"
@@ -575,7 +577,7 @@ function BookView() {
                       <TextField
                         disabled={true}
                         value={book?.imgSrc}
-                        margin="normal"
+                        margin="none"
                         fullWidth
                         name="imgSrc"
                         id="imgSrc"
