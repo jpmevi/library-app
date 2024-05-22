@@ -30,7 +30,7 @@ function CareerList() {
   const handleDelete = async (careerId: string) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/careers/${careerId}`,
+        `http://54.196.99.149:8085/api/v1/careers/${careerId}`,
         {
           method: "DELETE",
           headers: {
@@ -77,7 +77,7 @@ function CareerList() {
     const fetchComments = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8080/api/v1/careers?page=" +
+          "http://54.196.99.149:8085/api/v1/careers?page=" +
             page +
             "&careerName=" +
             search,

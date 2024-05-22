@@ -58,7 +58,7 @@ function CareerEdit() {
     const fetchCareer = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/v1/careers/${careerId}`,
+          `http://54.196.99.149:8085/api/v1/careers/${careerId}`,
           {
             method: "GET",
             headers: {
@@ -107,7 +107,7 @@ function CareerEdit() {
     // Si la validación es exitosa, procede con la petición fetch u otra lógica
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/careers/${careerId}`,
+        `http://54.196.99.149:8085/api/v1/careers/${careerId}`,
         {
           method: "PUT",
           headers: {
@@ -124,7 +124,7 @@ function CareerEdit() {
         if (dataJson.httpCode == 400 && dataJson.errors) {
           Object.entries(dataJson.errors).forEach(([field, message]) => {
             console.log(`${field}: ${message}`);
-            toast.error(`${message}`);
+            toast.error(`${field}: ${message}`);
           });
         } else if (dataJson.httpCode != 200) {
           toast.error(dataJson.message);

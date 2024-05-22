@@ -47,6 +47,14 @@
     background-color: #595959;
 }
 
+.link{
+    color: white;
+    text-decoration: underline;
+}
+.link:hover{
+    color: #BAF266;
+}
+
 .bookTitle{
     text-align: center;
     font-weight: bold;

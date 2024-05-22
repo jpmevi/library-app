@@ -47,8 +47,9 @@ export default function AdminDashbaord() {
   };
   function Book({ title, imgUrl,id }: { title: string; imgUrl: string, id:number }) {
     return (
-      <Link to={`/book-update/${id}`} className="book">
+     
       <div className="book">
+         <Link to={`/book-update/${id}`} className="link">
         <h5 className="bookTitle">
           {title}
         </h5>
@@ -58,15 +59,16 @@ export default function AdminDashbaord() {
           src={imgUrl}
         />
         </div>
+        </Link>
       </div>
-      </Link>
+
     );
   }
   React.useEffect(() => {
     const fetchBooks = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8080/api/v1/books?page=" +
+          "http://54.196.99.149:8085/api/v1/books?page=" +
             page +"&name="+search,
           {
             method: "GET",
@@ -116,6 +118,7 @@ export default function AdminDashbaord() {
       <div className="book-container">
       <div
           style={{
+            maxHeight: "550px",
             display: "flex",
             flexWrap: "wrap",
             gap: "0.65em",

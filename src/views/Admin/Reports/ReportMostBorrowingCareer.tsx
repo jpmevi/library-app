@@ -45,6 +45,8 @@ function ReportMostBorrowingCareer() {
   const [startDate, setStartDate] = useState<string>(new Date().toJSON().slice(0,10));
   const [endDate, setEndDate] = useState<string>(new Date().toJSON().slice(0,10));
   const [page, setPage] = useState(0);
+  const [careerName, setCareerName] = useState("");
+  const [careerCount, setCareerCount] = useState(0);
   const [search, setSearch] = useState("");
   const [totalPages, setTotalPages] = useState(10);
 
@@ -63,7 +65,7 @@ function ReportMostBorrowingCareer() {
     const fetchComments = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8080/api/v1/reports/most-borrowing-career?startDate="+(startDate.slice(0,10))+"&endDate="+endDate.slice(0,10)+"&page="+page,
+          "http://54.196.99.149:8085/api/v1/reports/most-borrowing-career?startDate="+(startDate.slice(0,10))+"&endDate="+endDate.slice(0,10)+"&page="+page,
           {
             method: "GET",
             headers: {
@@ -80,7 +82,12 @@ function ReportMostBorrowingCareer() {
           throw new Error("Error to fetch report");
         }
         console.log(data);
-        setCareers(data.data.loans);
+        const loans = data?.data?.loans ?? [];
+        if(loans){
+          setCareerName(data?.data?.careerName)
+          setCareerCount(data?.data?.count)
+        }
+        setCareers(loans);
         setTotalPages(data.totalPages);
       } catch (error) {
         navigate("/");
@@ -108,6 +115,7 @@ function ReportMostBorrowingCareer() {
       <ResponsiveDrawer />
       <div className="listCareersContainer">
         <h1 className="titleContainer">MOST BORROWING CAREER</h1>
+        <h3>Career: {careerName}, Total Loans: {careerCount}</h3>
         <div className="startDate-container">
            <DatePicker
                         label="Start Date"

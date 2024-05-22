@@ -61,7 +61,7 @@ function HistoryLoans() {
     const fetchComments = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8080/api/v1/reports/loans-history-by-student?startDate="+(startDate.slice(0,10))+"&endDate="+endDate.slice(0,10)+"&page="+page+"&userId="+username,
+          "http://54.196.99.149:8085/api/v1/reports/loans-history-by-student?startDate="+(startDate.slice(0,10))+"&endDate="+endDate.slice(0,10)+"&page="+page+"&userId="+username,
           {
             method: "GET",
             headers: {

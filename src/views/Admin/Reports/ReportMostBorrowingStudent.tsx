@@ -47,6 +47,8 @@ function ReportMostBorrowingStudent() {
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState("");
   const [totalPages, setTotalPages] = useState(10);
+  const [careerName, setCareerName] = useState("");
+  const [careerCount, setCareerCount] = useState(0);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage - 1);
@@ -63,7 +65,7 @@ function ReportMostBorrowingStudent() {
     const fetchComments = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8080/api/v1/reports/most-borrowing-student?startDate="+(startDate.slice(0,10))+"&endDate="+endDate.slice(0,10)+"&page="+page,
+          "http://54.196.99.149:8085/api/v1/reports/most-borrowing-student?startDate="+(startDate.slice(0,10))+"&endDate="+endDate.slice(0,10)+"&page="+page,
           {
             method: "GET",
             headers: {
@@ -80,7 +82,12 @@ function ReportMostBorrowingStudent() {
           throw new Error("Error to fetch report");
         }
         console.log(data);
-        setCareers(data.data.loans);
+        const loans = data?.data?.loans ?? [];
+        if(loans){
+          setCareerName(data?.data?.userId);
+          setCareerCount(data?.data?.count);
+        }
+        setCareers(loans);
         setTotalPages(data.totalPages);
       } catch (error) {
         navigate("/");
@@ -108,6 +115,7 @@ function ReportMostBorrowingStudent() {
       <ResponsiveDrawer />
       <div className="listCareersContainer">
         <h1 className="titleContainer">MOST BORROWING STUDENT</h1>
+        <h3>Student ID: {careerName}, Total Loans: {careerCount}</h3>
         <div className="startDate-container">
            <DatePicker
                         label="Start Date"
