@@ -56,10 +56,10 @@ function CurrentLoans() {
     console.log(page);
   };
   const handleChangeStartDate = (newValue: dayjs.Dayjs | null) => {
-    setStartDate(newValue ? newValue.toISOString() : "");
+    setStartDate(newValue && newValue.isValid() ? newValue.toISOString() : "");
   };
   const handleChangeEndDate = (newValue: dayjs.Dayjs | null) => {
-    setEndDate(newValue ? newValue.toISOString() : "");
+    setEndDate(newValue && newValue.isValid() ? newValue.toISOString() : "");
   };
 
   useEffect(() => {

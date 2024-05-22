@@ -69,7 +69,7 @@ function ReturnBook() {
   const handleChangeDate = (newValue: dayjs.Dayjs | null) => {
     setReturnData((prev) => ({
       ...prev,
-      actualDate: newValue ? newValue.toISOString() : "",
+      actualDate: newValue && newValue.isValid() ? newValue.toISOString() : "",
     }));
   };
 
@@ -127,7 +127,7 @@ function ReturnBook() {
           toast.error(dataJson.message);
         } else {
           setBooks(dataJson.data);
-          if (dataJson.data.totalToPay > 0) {
+          if (dataJson.data.totalToPay > 1) {
             toast.error("You have to pay the arrear");
             setIsArrear(true);
             setAmount(dataJson.data.totalToPay);

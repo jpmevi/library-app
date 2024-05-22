@@ -66,6 +66,10 @@ function SearchBook() {
     }
   };
 
+  const removeLastBook = () => {
+    setIsbnCodes((prevBooks) => prevBooks.slice(0, -1));
+  };
+
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     if (isbnCodes.length === 0) {
@@ -248,6 +252,20 @@ function SearchBook() {
                             </li>
                           ))}
                         </ul>
+                        <Button
+                          variant="contained"
+                          sx={{
+                            marginTop: 2,
+                            color: "black",
+                            backgroundColor: "#BAF266",
+                            "&:hover": {
+                              backgroundColor: "white",
+                            },
+                          }}
+                          onClick={removeLastBook}
+                        >
+                          Remove Last Book
+                        </Button>
                       </div>
                     </Box>
                   </Box>

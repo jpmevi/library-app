@@ -45,7 +45,7 @@ function ReportLoanToday() {
     console.log(page);
   };
   const handleChangeDate = (newValue: dayjs.Dayjs | null) => {
-    setDate(newValue ? newValue.toISOString() : "");
+    setDate(newValue && newValue.isValid() ? newValue.toISOString() : "");
   };
 
   useEffect(() => {

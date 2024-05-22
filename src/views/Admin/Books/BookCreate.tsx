@@ -76,7 +76,7 @@ function BookCreate() {
   const handleChangeDate = (newValue: dayjs.Dayjs | null) => {
     setBook((prev) => ({
       ...prev,
-      publicationDate: newValue ? newValue.toISOString() : "",
+      publicationDate: newValue && newValue.isValid() ? newValue.toISOString() : "",
     }));
   };
   const handleChange = (event: any) => {

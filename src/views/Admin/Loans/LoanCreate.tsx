@@ -1,4 +1,3 @@
-
 import ResponsiveDrawer from "../../../components/Sidebar";
 import React, { useEffect, useState } from "react";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -46,7 +45,7 @@ function LoanCreate(books: any) {
           root: {
             color: "white",
             "&.Mui-focused": {
-              color: "white", 
+              color: "white",
             },
           },
         },
@@ -54,8 +53,7 @@ function LoanCreate(books: any) {
     },
   });
 
-  useEffect(() => {
-  }, []);
+  useEffect(() => {}, []);
 
   const handleChange = (event: any) => {
     const { name, value } = event.target;
@@ -64,17 +62,21 @@ function LoanCreate(books: any) {
   const handleChangeDate = (newValue: dayjs.Dayjs | null) => {
     setLoan((prev) => ({
       ...prev,
-      loanDate: newValue ? newValue.toISOString() : "",
+      loanDate: newValue && newValue.isValid() ? newValue.toISOString() : "",
     }));
   };
-  const handleSubmit = async (event: any) => { 
+
+  const handleSubmit = async (event: any) => {
     event.preventDefault();
     if (!validateForm()) {
       toast.error("Please fill in all required fields.");
       return;
     }
 
-    const updatedLoan = { ...loan, bookIds: books.books.map((book: any) => book.id) };
+    const updatedLoan = {
+      ...loan,
+      bookIds: books.books.map((book: any) => book.id),
+    };
     // Si la validación es exitosa, procede con la petición fetch u otra lógica
     try {
       const response = await fetch(
@@ -102,14 +104,12 @@ function LoanCreate(books: any) {
         }
       } else {
         dataJson.data.map((data: any) => {
-          if(data.success === true){
-            toast.success(data.isbnCode +": "+ data.message);
-          
-          }else{
-            toast.error(data.isbnCode +": "+ data.message);
-            
+          if (data.success === true) {
+            toast.success(data.isbnCode + ": " + data.message);
+          } else {
+            toast.error(data.isbnCode + ": " + data.message);
           }
-        })
+        });
         setTimeout(() => {
           navigate("/dashboard-admin");
         }, 5000);
@@ -127,17 +127,14 @@ function LoanCreate(books: any) {
     let errors: any = {};
     let formIsValid = true;
 
-
     if (!loan?.studentId) {
       formIsValid = false;
       errors["studentId"] = "User Id is required.";
-
     }
 
     if (!loan?.loanDate) {
       formIsValid = false;
       errors["loanDate"] = "Loan Date is required.";
-
     }
 
     setFormErrors(errors);
@@ -211,17 +208,14 @@ function LoanCreate(books: any) {
                           Books to loan:
                         </Typography>
                         <ul>
-                          {books.books.map((book:any,index:any) => (
+                          {books.books.map((book: any, index: any) => (
                             <li key={index} style={{ color: "white" }}>
                               {book.isbnCode}
                             </li>
                           ))}
                         </ul>
                       </div>
-                       <InputLabel
-                        sx={{ color: "white" }}
-                        id="studentId"
-                      >
+                      <InputLabel sx={{ color: "white" }} id="studentId">
                         User ID
                       </InputLabel>
                       <TextField
@@ -250,7 +244,7 @@ function LoanCreate(books: any) {
                         InputProps={{ style: { color: "white" } }}
                         InputLabelProps={{ style: { color: "white" } }}
                       />
-                     <DatePicker
+                      <DatePicker
                         label="Loan Date"
                         name="loanDate"
                         onChange={handleChangeDate}
@@ -267,7 +261,6 @@ function LoanCreate(books: any) {
                               borderColor: "white",
                             },
                         }}
-                       
                       />
                       <Button
                         className="button"

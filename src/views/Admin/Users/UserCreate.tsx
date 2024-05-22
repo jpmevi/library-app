@@ -36,7 +36,7 @@ function UserCreate() {
     password?: string;
   }
   interface Career {
-    id: number;
+    code: string;
     name: string;
   }
 
@@ -104,7 +104,7 @@ function UserCreate() {
   const handleChangeDate = (newValue: dayjs.Dayjs | null) => {
     setUser(prev => ({
       ...prev,
-      birthDate: newValue ? newValue.toISOString() : ""
+      birthDate: newValue && newValue.isValid() ? newValue.toISOString() : ""
     }));
   };  
   const handleChange = (event: any) => {
@@ -358,7 +358,7 @@ function UserCreate() {
                         }}
                       >
                         {career.map((careerItem) => (
-                          <MenuItem value={careerItem.id}>
+                          <MenuItem value={careerItem.code}>
                             {careerItem.name}
                           </MenuItem>
                         ))}
